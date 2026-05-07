@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>מחולל הודעת ביטול תחנה</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      direction: rtl;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 850px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    select, textarea, button {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 18px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    }
+
+    textarea {
+      height: 140px;
+      resize: none;
+      line-height: 1.5;
+      direction: rtl;
+      text-align: right;
+      white-space: pre-line;
+    }
+
+    button {
+      margin-top: 15px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #125aa0;
+    }
+
+    .small-note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+    }
+
+.copy-btn {
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+
+.copy-btn:active {
+  transform: scale(0.97);
+  background: #0d47a1;
+}
+
+.boxes-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.box-section {
+  flex: 1;
+}
+
+.box-section label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.box-section select,
+.box-section textarea {
+  width: 100%;
+}
+
+textarea {
+  height: 120px;
+}
+
+.message-box textarea {
+  height: 140px;
+  resize: none;
+  line-height: 1.5;
+  direction: rtl;
+  text-align: right;
+}
+
+.left-message-box textarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 140px;
+  resize: none;
+  line-height: 1.5;
+  direction: ltr;
+  text-align: left;
+}
+.reason-box {
+  flex: 0 0 130px;
+}
+
+.message-box {
+  flex: 0 0 230px;
+}
+
+.left-message-box {
+  flex: 1;
+  min-width: 220px;
+}
+.copy-btn.copied {
+  transform: scale(0.97);
+  background: #0d47a1;
+}
+/* uniform message columns */
+.message-box,
+.left-message-box {
+  flex: 0 0 200px;
+
+.message-box textarea,
+.left-message-box textarea {
+  width: 100%;
+  height: 140px;
+  box-sizing: border-box;
+}
+
+.message-box button,
+.left-message-box button {
+  width: 100%;
+  box-sizing: border-box;
+}
+.message-box,
+.left-message-box {
+  width: 260px;
+  flex: 0 0 260px;
+  min-width: 260px;
+  max-width: 260px;
+}
+
+.message-box textarea,
+.left-message-box textarea,
+.message-box button,
+.left-message-box button {
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  box-sizing: border-box;
+}
+/* FINAL OVERRIDE - make both message boxes exactly equal */
+.message-box,
+.left-message-box {
+  flex: none !important;
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+}
+
+#smsText,
+#smsTextLeft {
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  height: 140px !important;
+  box-sizing: border-box !important;
+}
+
+.message-box .copy-btn,
+.left-message-box .copy-btn {
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
+  box-sizing: border-box !important;
+}
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>מחולל הודעת ביטול תחנה</h2>
+
+<div class="boxes-row">
+
+  <div class="box-section reason-box">
+    <label>סיבת הביטול</label>
+    <select id="reason" onchange="generateSMS()">
+      <option value="תאונה">תאונה</option>
+      <option value="חסימה">חסימה</option>
+      <option value="עבודות">עבודות</option>
+      <option value="רכב תקוע">רכב תקוע</option>
+    </select>
+  </div>
+
+  <div class="box-section message-box">
+    <label>הודעה מוכנה</label>
+    <textarea id="smsText" readonly></textarea>
+
+    <button class="copy-btn" onclick="copySMS()">העתק הודעה</button>
+  </div>
+
+  <div class="box-section left-message-box">
+  <label>הודעה מיושרת לשמאל</label>
+  <textarea id="smsTextLeft" readonly></textarea>
+
+  <button class="copy-btn" onclick="copyLeftSMS()">העתק הודעה</button>
+</div>
+
+</div>
+
+  </div>
+<script>
+  function generateSMS() {
+  const reason = document.getElementById("reason").value;
+
+  const text =
+`עקב ${reason}
+תחנה זו
+מבוטלת זמנית
+לפרטים 8787*`;
+
+  const leftText =
+`עקב ${reason}
+תחנה זו
+מבוטלת זמנית
+*לפרטים 8787`;
+
+  document.getElementById("smsText").value = text;
+  document.getElementById("smsTextLeft").value = leftText;
+}
+
+  async function copySMS() {
+    generateSMS();
+
+    const smsText = document.getElementById("smsText").value;
+
+    try {
+      await navigator.clipboard.writeText(smsText);
+
+      const btn = document.querySelector(".message-box .copy-btn");
+      btn.classList.add("copied");
+
+      setTimeout(() => {
+        btn.classList.remove("copied");
+      }, 200);
+
+    } catch (err) {
+      alert("לא ניתן היה להעתיק את ההודעה");
+    }
+  }
+
+  async function copyLeftSMS() {
+    generateSMS();
+
+    const smsTextLeft = document.getElementById("smsTextLeft").value;
+
+    try {
+      await navigator.clipboard.writeText(smsTextLeft);
+
+      const btn = document.querySelector(".left-message-box .copy-btn");
+      btn.classList.add("copied");
+
+      setTimeout(() => {
+        btn.classList.remove("copied");
+      }, 200);
+
+    } catch (err) {
+      alert("לא ניתן היה להעתיק את ההודעה");
+    }
+  }
+
+  generateSMS();
+</script>
