@@ -140,13 +140,13 @@
   <div class="row">
 
   <div class="field">
-    <label>מיום</label>
-    <select id="fromDay"></select>
+    <label>יום בחודש</label>
+    <select id="startDay"></select>
   </div>
 
   <div class="field">
-    <label>עד יום</label>
-    <select id="toDay"></select>
+    <label>כמה ימים</label>
+    <select id="dayCount"></select>
   </div>
 
 </div>
@@ -201,20 +201,35 @@ function getDisplayEndTime(endHour) {
   return buildTime(endHour, 0);
 }
 
+function getDaysInCurrentMonth() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  return new Date(year, month + 1, 0).getDate();
+}
+
 function fillDaySelectors() {
-  const fromDay = document.getElementById("fromDay");
-  const toDay = document.getElementById("toDay");
+  const startDay = document.getElementById("startDay");
+  const dayCount = document.getElementById("dayCount");
 
-  fromDay.innerHTML = "";
-  toDay.innerHTML = "";
+  const today = new Date();
+  const todayDay = today.getDate();
+  const daysInMonth = getDaysInCurrentMonth();
 
-  for (let day = 1; day <= 31; day++) {
-    fromDay.innerHTML += `<option value="${day}">${day}</option>`;
-    toDay.innerHTML += `<option value="${day}">${day}</option>`;
+  startDay.innerHTML = "";
+  dayCount.innerHTML = "";
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    startDay.innerHTML += `<option value="${day}">${day}</option>`;
   }
 
-  fromDay.value = 1;
-  toDay.value = 1;
+  for (let count = 0; count <= 31; count++) {
+    dayCount.innerHTML += `<option value="${count}">${count}</option>`;
+  }
+
+  startDay.value = todayDay;
+  dayCount.value = 0;
 }
 
 function fillHourSelectors() {
@@ -239,21 +254,16 @@ function fillHourSelectors() {
 }
 
 function buildDates() {
-  const YEAR = 2026;
-  const CURRENT_MONTH = 5;
+  const today = new Date();
 
-  const fromDay = Number(document.getElementById("fromDay").value);
-  const toDay = Number(document.getElementById("toDay").value);
+  const year = today.getFullYear();
+  const month = today.getMonth();
 
-  const startDate = new Date(YEAR, CURRENT_MONTH - 1, fromDay);
+  const startDay = Number(document.getElementById("startDay").value);
+  const dayCount = Number(document.getElementById("dayCount").value);
 
-  let endMonth = CURRENT_MONTH;
-
-  if (toDay < fromDay) {
-    endMonth++;
-  }
-
-  const endDate = new Date(YEAR, endMonth - 1, toDay);
+  const startDate = new Date(year, month, startDay);
+  const endDate = addDays(startDate, dayCount);
 
   return {
     startDate,
@@ -407,8 +417,10 @@ function copySingle(text) {
 function clearResults() {
   document.getElementById("result").innerHTML = "";
 
-  document.getElementById("fromDay").selectedIndex = 0;
-  document.getElementById("toDay").selectedIndex = 0;
+  const today = new Date();
+
+document.getElementById("startDay").value = today.getDate();
+document.getElementById("dayCount").value = 0;
 
   if (currentMode === "duration") {
   document.getElementById("startHour").value = 22;
