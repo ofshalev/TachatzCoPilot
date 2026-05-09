@@ -537,16 +537,7 @@ function clearResults() {
 
   saveTachatzSettings();
 }
-if (currentMode === "alert") {
-  const alertStartHour = getAlertStartHour();
-  const alertEndHour = getAlertEndHour();
 
-  document.getElementById("startHour").value = alertStartHour;
-  document.getElementById("endHour").value = alertEndHour;
-}
-
-saveTachatzSettings();
-}
 
   function setEventType(type) {
   currentEventType = type;
