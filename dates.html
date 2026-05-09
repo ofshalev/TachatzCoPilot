@@ -206,16 +206,67 @@ function getDisplayEndTime(endHour) {
 }
   
 function generate() {
-  const startTime = localStorage.getItem("tachatzDurationStartTime") || "22:00";
-  const endTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
+  const startHour = Number(document.getElementById("startHour").value);
+  const endHour = Number(document.getElementById("endHour").value);
   const result = document.getElementById("result");
 
   const { startDate, endDate } = buildDates();
 
-saveTachatzSettings();
+  saveTachatzSettings();
 
-if (currentMode === "duration") {
-  saveDurationHours();
+  if (currentMode === "duration") {
+    saveDurationHours();
+  }
+
+  let current = new Date(startDate);
+  let lines = [];
+
+  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const endTime = getDisplayEndTime(endHour);
+
+  while (current <= endDate) {
+    let finishDate = new Date(current);
+
+    if (endHour < startHour) {
+      finishDate = addDays(current, 1);
+    }
+
+    lines.push(`
+      <div class="result-row">
+
+        <div class="result-cell">
+          ${formatDate(current)}
+        </div>
+
+        <div class="result-cell">
+          ${startTime}
+        </div>
+
+        <button class="copy-small"
+          onclick="copySingle('${formatDate(current)} ${startTime}')">
+          העתק
+        </button>
+
+        <div class="result-cell">
+          ${formatDate(finishDate)}
+        </div>
+
+        <div class="result-cell">
+          ${endTime}
+        </div>
+
+        <button class="copy-small"
+          onclick="copySingle('${formatDate(finishDate)} ${endTime}')">
+          העתק
+        </button>
+
+      </div>
+    `);
+
+    current = addDays(current, 1);
+  }
+
+  result.innerHTML = lines.join("");
 }
   
   let current = new Date(startDate);
