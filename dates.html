@@ -132,8 +132,8 @@
   <h2>שעות הופעת ההודעה</h2>
 
 <div class="mode-row">
-  <button id="alertModeBtn" class="mode-btn active" onclick="setMode('alert')">התראה</button>
-  <button id="durationModeBtn" class="mode-btn" onclick="setMode('duration')">משך</button>
+  <button id="durationModeBtn" class="mode-btn active" onclick="setMode('duration')">משך</button>
+  <button id="alertModeBtn" class="mode-btn" onclick="setMode('alert')">התראה</button>
 </div>
 
   
@@ -174,7 +174,7 @@
 </div>
 
 <script>
-let currentMode = "alert";
+let currentMode = "duration";
 
 function formatDate(date) {
   const d = String(date.getDate()).padStart(2, "0");
@@ -280,24 +280,39 @@ function saveDurationHours() {
   const startTime = `${String(startHour).padStart(2, "0")}:00`;
   const endTime = `${String(endHour).padStart(2, "0")}:00`;
 
+  localStorage.setItem("tachatzDurationStartHour", startHour);
+  localStorage.setItem("tachatzDurationEndHour", endHour);
+
   localStorage.setItem("tachatzDurationStartTime", startTime);
   localStorage.setItem("tachatzDurationEndTime", endTime);
 }
 
+function subtractHours(hour, hoursToSubtract) {
+  let result = hour - hoursToSubtract;
+
+  if (result < 0) {
+    result += 24;
+  }
+
+  return result;
+}
+
+function getAlertStartHour() {
+  const durationStartHour = Number(localStorage.getItem("tachatzDurationStartHour") || 22);
+  return subtractHours(durationStartHour, 4);
+}
+
+function getAlertEndHour() {
+  const durationStartHour = Number(localStorage.getItem("tachatzDurationStartHour") || 22);
+  return durationStartHour;
+}
+  
 function setMode(mode) {
   currentMode = mode;
-
   localStorage.setItem("tachatzMode", mode);
 
   document.getElementById("alertModeBtn").classList.remove("active");
   document.getElementById("durationModeBtn").classList.remove("active");
-
-  if (mode === "alert") {
-    document.getElementById("alertModeBtn").classList.add("active");
-
-    document.getElementById("startHour").value = 18;
-    document.getElementById("endHour").value = 22;
-  }
 
   if (mode === "duration") {
     document.getElementById("durationModeBtn").classList.add("active");
@@ -306,6 +321,16 @@ function setMode(mode) {
     document.getElementById("endHour").value = 5;
 
     saveDurationHours();
+  }
+
+  if (mode === "alert") {
+    document.getElementById("alertModeBtn").classList.add("active");
+
+    const alertStartHour = getAlertStartHour();
+    const alertEndHour = getAlertEndHour();
+
+    document.getElementById("startHour").value = alertStartHour;
+    document.getElementById("endHour").value = alertEndHour;
   }
 
   saveTachatzSettings();
@@ -385,26 +410,30 @@ function clearResults() {
   document.getElementById("fromDay").selectedIndex = 0;
   document.getElementById("toDay").selectedIndex = 0;
 
-  if (currentMode === "alert") {
-    document.getElementById("startHour").value = 18;
-    document.getElementById("endHour").value = 22;
-  }
-
   if (currentMode === "duration") {
-    document.getElementById("startHour").value = 22;
-    document.getElementById("endHour").value = 5;
-    saveDurationHours();
-  }
+  document.getElementById("startHour").value = 22;
+  document.getElementById("endHour").value = 5;
+  saveDurationHours();
+}
 
-  saveTachatzSettings();
+if (currentMode === "alert") {
+  const alertStartHour = getAlertStartHour();
+  const alertEndHour = getAlertEndHour();
+
+  document.getElementById("startHour").value = alertStartHour;
+  document.getElementById("endHour").value = alertEndHour;
+}
+
+saveTachatzSettings();
 }
 
 fillDaySelectors();
 fillHourSelectors();
 
-localStorage.setItem("tachatzDurationStartTime", "22:00");
-localStorage.setItem("tachatzDurationEndTime", "05:00");
+document.getElementById("startHour").value = 22;
+document.getElementById("endHour").value = 5;
 
+saveDurationHours();
 saveTachatzSettings();
 </script>
 </body>
