@@ -487,13 +487,29 @@ function clearResults() {
 
   const today = new Date();
 
-document.getElementById("startDay").value = today.getDate();
-document.getElementById("dayCount").value = 1;
+  document.getElementById("startDay").value = today.getDate();
+  document.getElementById("dayCount").value = 1;
+
+  if (currentEventType === "immediate") {
+    setRealTimeDefaults();
+    return;
+  }
 
   if (currentMode === "duration") {
-  document.getElementById("startHour").value = 22;
-  document.getElementById("endHour").value = 5;
-  saveDurationHours();
+    document.getElementById("startHour").value = 22;
+    document.getElementById("endHour").value = 5;
+    saveDurationHours();
+  }
+
+  if (currentMode === "alert") {
+    const alertStartHour = getAlertStartHour();
+    const alertEndHour = getAlertEndHour();
+
+    document.getElementById("startHour").value = alertStartHour;
+    document.getElementById("endHour").value = alertEndHour;
+  }
+
+  saveTachatzSettings();
 }
 
 if (currentMode === "alert") {
