@@ -123,12 +123,34 @@
   background: #1976d2;
   color: white;
 }
+    .event-type-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.event-type-btn {
+  background: #e5e7eb;
+  color: #111;
+  min-width: 100px;
+}
+
+.event-type-btn.active {
+  background: #1976d2;
+  color: white;
+}
   </style>
 </head>
 
 <body>
 
 <div class="container">
+
+  <div class="event-type-row">
+  <button id="immediateEventBtn" class="event-type-btn active" onclick="setEventType('immediate')">מיידי</button>
+  <button id="futureEventBtn" class="event-type-btn" onclick="setEventType('future')">עתידי</button>
+</div>
   <h2>זמני הופעת ההודעה</h2>
 
 <div class="mode-row">
@@ -175,6 +197,7 @@
 
 <script>
 let currentMode = "duration";
+let currentEventType = "immediate";
 
 function formatDate(date) {
   const d = String(date.getDate()).padStart(2, "0");
@@ -439,6 +462,22 @@ if (currentMode === "alert") {
 saveTachatzSettings();
 }
 
+  function setEventType(type) {
+  currentEventType = type;
+  localStorage.setItem("tachatzEventType", type);
+
+  document.getElementById("immediateEventBtn").classList.remove("active");
+  document.getElementById("futureEventBtn").classList.remove("active");
+
+  if (type === "immediate") {
+    document.getElementById("immediateEventBtn").classList.add("active");
+  }
+
+  if (type === "future") {
+    document.getElementById("futureEventBtn").classList.add("active");
+  }
+}
+
 fillDaySelectors();
 fillHourSelectors();
 
@@ -447,6 +486,8 @@ document.getElementById("endHour").value = 5;
 
 saveDurationHours();
 saveTachatzSettings();
+
+  localStorage.setItem("tachatzEventType", currentEventType);
 </script>
 </body>
 </html>
