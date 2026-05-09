@@ -265,7 +265,21 @@ textarea {
   let text;
   let leftText;
 
-  if (mode === "alert") {
+if (mode === "alert") {
+
+  if (isTemporary) {
+    text =
+`עקב ${reason}
+תחנה זו
+תבוטל זמנית
+לפרטים 8787*`;
+
+    leftText =
+`עקב ${reason}
+תחנה זו
+תבוטל זמנית
+*לפרטים 8787`;
+  } else {
     text =
 `עקב ${reason}
 תחנה זו תבוטל
@@ -277,7 +291,9 @@ textarea {
 תחנה זו תבוטל
 בין ${durationStartTime} - ${durationEndTime}
 *לפרטים 8787`;
- } else {
+  }
+
+} else {
   const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
 
   const thirdLine = isTemporary
@@ -296,10 +312,7 @@ ${thirdLine}
 ${thirdLine}
 *לפרטים 8787`;
 }
-
-  document.getElementById("smsText").value = text;
-  document.getElementById("smsTextLeft").value = leftText;
-}
+   
   async function copySMS() {
     generateSMS();
 
