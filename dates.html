@@ -474,7 +474,7 @@ saveTachatzSettings();
     document.getElementById("immediateEventBtn").classList.add("active");
 
     // In real-time mode, there is no alert phase
-    document.getElementById("alertModeBtn").style.display = "none";
+    document.getElementById("alertModeBtn").style.visibility = "hidden";
 
     // Force duration mode
     setMode("duration");
@@ -484,7 +484,7 @@ saveTachatzSettings();
     document.getElementById("futureEventBtn").classList.add("active");
 
     // In future mode, show both duration and alert
-    document.getElementById("alertModeBtn").style.display = "inline-block";
+    document.getElementById("alertModeBtn").style.visibility = "visible";
   }
 }
 
