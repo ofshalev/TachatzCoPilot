@@ -258,7 +258,7 @@ textarea {
 
   </div>
 <script>
- function generateSMS() {
+function generateSMS() {
   const reason = document.getElementById("reason").value;
 
   const mode = localStorage.getItem("tachatzMode") || "duration";
@@ -272,140 +272,136 @@ textarea {
   let text = "";
   let leftText = "";
 
-  if (mode === "alert") {
+  if (isDisruption) {
+
+    if (mode === "alert") {
+      text =
+`עקב ${reason}
+יחולו שיבושים
+בקווי השירות
+לפרטים 8787*`;
+
+      leftText =
+`עקב ${reason}
+יחולו שיבושים
+בקווי השירות
+*לפרטים 8787`;
+    } else {
+      text =
+`עקב ${reason}
+חלים שיבושים
+בקווי השירות
+לפרטים 8787*`;
+
+      leftText =
+`עקב ${reason}
+חלים שיבושים
+בקווי השירות
+*לפרטים 8787`;
+    }
+
+  } else if (mode === "alert") {
 
     if (isTemporary) {
       text =
 `עקב ${reason}
-if (isDisruption) {
-
-  if (mode === "alert") {
-    text =
-`עקב ${reason}
-יחולו שיבושים
-בקווי השירות
-לפרטים 8787*`;
-
-    leftText =
-`עקב ${reason}
-יחולו שיבושים
-בקווי השירות
-*לפרטים 8787`;
-  } else {
-    text =
-`עקב ${reason}
-חלים שיבושים
-בקווי השירות
-לפרטים 8787*`;
-
-    leftText =
-`עקב ${reason}
-חלים שיבושים
-בקווי השירות
-*לפרטים 8787`;
-  }
-
-} else if (mode === "alert") {
-
-  if (isTemporary) {
-    text =
-`עקב ${reason}
 תחנה זו
 תבוטל זמנית
 לפרטים 8787*`;
 
-    leftText =
+      leftText =
 `עקב ${reason}
 תחנה זו
 תבוטל זמנית
 *לפרטים 8787`;
-
-  } else {
-    text =
+    } else {
+      text =
 `עקב ${reason}
 תחנה זו תבוטל
 בין ${durationStartTime} - ${durationEndTime}
 לפרטים 8787*`;
 
-    leftText =
+      leftText =
 `עקב ${reason}
 תחנה זו תבוטל
 בין ${durationStartTime} - ${durationEndTime}
 *לפרטים 8787`;
-  }
+    }
 
-} else {
+  } else {
 
-  const thirdLine = isTemporary
-    ? "מבוטלת זמנית"
-    : `מבוטלת עד ${durationEndTime}`;
+    const thirdLine = isTemporary
+      ? "מבוטלת זמנית"
+      : `מבוטלת עד ${durationEndTime}`;
 
-  text =
+    text =
 `עקב ${reason}
 תחנה זו
 ${thirdLine}
 לפרטים 8787*`;
 
-  leftText =
+    leftText =
 `עקב ${reason}
 תחנה זו
 ${thirdLine}
 *לפרטים 8787`;
-}
+  }
 
   document.getElementById("smsText").value = text;
   document.getElementById("smsTextLeft").value = leftText;
-}   
-  async function copySMS() {
-    generateSMS();
+}
 
-    const smsText = document.getElementById("smsText").value;
+async function copySMS() {
+  generateSMS();
 
-    try {
-      await navigator.clipboard.writeText(smsText);
+  const smsText = document.getElementById("smsText").value;
 
-      const btn = document.querySelector(".message-box .copy-btn");
-      btn.classList.add("copied");
+  try {
+    await navigator.clipboard.writeText(smsText);
 
-      setTimeout(() => {
-        btn.classList.remove("copied");
-      }, 200);
+    const btn = document.querySelector(".message-box .copy-btn");
+    btn.classList.add("copied");
 
-    } catch (err) {
-      alert("לא ניתן היה להעתיק את ההודעה");
-    }
+    setTimeout(() => {
+      btn.classList.remove("copied");
+    }, 200);
+
+  } catch (err) {
+    alert("לא ניתן היה להעתיק את ההודעה");
   }
+}
 
-  async function copyLeftSMS() {
-    generateSMS();
+async function copyLeftSMS() {
+  generateSMS();
 
-    const smsTextLeft = document.getElementById("smsTextLeft").value;
+  const smsTextLeft = document.getElementById("smsTextLeft").value;
 
-    try {
-      await navigator.clipboard.writeText(smsTextLeft);
+  try {
+    await navigator.clipboard.writeText(smsTextLeft);
 
-      const btn = document.querySelector(".left-message-box .copy-btn");
-      btn.classList.add("copied");
+    const btn = document.querySelector(".left-message-box .copy-btn");
+    btn.classList.add("copied");
 
-      setTimeout(() => {
-        btn.classList.remove("copied");
-      }, 200);
+    setTimeout(() => {
+      btn.classList.remove("copied");
+    }, 200);
 
-    } catch (err) {
-      alert("לא ניתן היה להעתיק את ההודעה");
-    }
+  } catch (err) {
+    alert("לא ניתן היה להעתיק את ההודעה");
   }
+}
 
- window.addEventListener("storage", function(event) {
+window.addEventListener("storage", function(event) {
   if (
     event.key === "tachatzMode" ||
     event.key === "tachatzStartTime" ||
-    event.key === "tachatzEndTime"
+    event.key === "tachatzEndTime" ||
+    event.key === "tachatzDurationStartTime" ||
+    event.key === "tachatzDurationEndTime"
   ) {
     generateSMS();
   }
 });
 
-  
-  generateSMS();
+generateSMS();
 </script>
