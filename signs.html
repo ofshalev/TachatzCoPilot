@@ -254,65 +254,68 @@ textarea {
 <script>
  function generateSMS() {
   const reason = document.getElementById("reason").value;
-   const isTemporary = document.getElementById("temporaryCancel").checked;
 
-  const mode = localStorage.getItem("tachatzMode") || "alert";
+  const mode = localStorage.getItem("tachatzMode") || "duration";
 
-  // These are the REAL cancellation hours from "משך"
   const durationStartTime = localStorage.getItem("tachatzDurationStartTime") || "22:00";
   const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
 
-  let text;
-  let leftText;
+  const isTemporary = document.getElementById("temporaryCancel").checked;
 
-if (mode === "alert") {
+  let text = "";
+  let leftText = "";
 
-  if (isTemporary) {
-    text =
+  if (mode === "alert") {
+
+    if (isTemporary) {
+      text =
 `עקב ${reason}
 תחנה זו
 תבוטל זמנית
 לפרטים 8787*`;
 
-    leftText =
+      leftText =
 `עקב ${reason}
 תחנה זו
 תבוטל זמנית
 *לפרטים 8787`;
-  } else {
-    text =
+
+    } else {
+      text =
 `עקב ${reason}
 תחנה זו תבוטל
 בין ${durationStartTime} - ${durationEndTime}
 לפרטים 8787*`;
 
-    leftText =
+      leftText =
 `עקב ${reason}
 תחנה זו תבוטל
 בין ${durationStartTime} - ${durationEndTime}
+*לפרטים 8787`;
+    }
+
+  } else {
+
+    const thirdLine = isTemporary
+      ? "מבוטלת זמנית"
+      : `מבוטלת עד ${durationEndTime}`;
+
+    text =
+`עקב ${reason}
+תחנה זו
+${thirdLine}
+לפרטים 8787*`;
+
+    leftText =
+`עקב ${reason}
+תחנה זו
+${thirdLine}
 *לפרטים 8787`;
   }
 
-} else {
-  const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
-
-  const thirdLine = isTemporary
-    ? "מבוטלת זמנית"
-    : `מבוטלת עד ${durationEndTime}`;
-
-  text =
-`עקב ${reason}
-תחנה זו
-${thirdLine}
-לפרטים 8787*`;
-
-  leftText =
-`עקב ${reason}
-תחנה זו
-${thirdLine}
-*לפרטים 8787`;
-}
-   
+  document.getElementById("smsText").value = text;
+  document.getElementById("smsTextLeft").value = leftText;
+}   
   async function copySMS() {
     generateSMS();
 
