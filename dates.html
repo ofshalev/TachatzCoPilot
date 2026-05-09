@@ -213,6 +213,10 @@ function generate() {
   const { startDate, endDate } = buildDates();
 
 saveTachatzSettings();
+
+if (currentMode === "duration") {
+  saveDurationHours();
+}
   
   let current = new Date(startDate);
   let lines = [];
@@ -377,6 +381,17 @@ function saveTachatzSettings() {
   localStorage.setItem("tachatzMode", currentMode);
   localStorage.setItem("tachatzStartTime", startTime);
   localStorage.setItem("tachatzEndTime", endTime);
+}
+
+function saveDurationHours() {
+  const startHour = Number(document.getElementById("startHour").value);
+  const endHour = Number(document.getElementById("endHour").value);
+
+  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const endTime = getDisplayEndTime(endHour);
+
+  localStorage.setItem("tachatzDurationStartTime", startTime);
+  localStorage.setItem("tachatzDurationEndTime", endTime);
 }
   
 fillDaySelectors();
