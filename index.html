@@ -285,7 +285,26 @@ body {
     height: 100%;
     overflow: hidden;
 }
-    
+    .signage-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.signs-frame {
+  height: 820px;
+}
+
+.dates-frame {
+  height: 820px;
+}
+
+@media (max-width: 1000px) {
+  .signage-grid {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 
