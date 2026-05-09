@@ -234,6 +234,10 @@ textarea {
        <input type="checkbox" id="temporaryCancel" onchange="generateSMS()">
        ביטול זמני
       </label>
+    <label class="temporary-check">
+  <input type="checkbox" id="disruptionMode" onchange="generateSMS()">
+  שיבושים
+</label>
   </div>
 
   <div class="box-section message-box">
@@ -263,6 +267,7 @@ textarea {
   const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
 
   const isTemporary = document.getElementById("temporaryCancel").checked;
+  const isDisruption = document.getElementById("disruptionMode").checked;
 
   let text = "";
   let leftText = "";
@@ -272,48 +277,81 @@ textarea {
     if (isTemporary) {
       text =
 `עקב ${reason}
-תחנה זו
-תבוטל זמנית
+if (isDisruption) {
+
+  if (mode === "alert") {
+    text =
+`עקב ${reason}
+יחולו שיבושים
+בקווי השירות
 לפרטים 8787*`;
 
-      leftText =
+    leftText =
 `עקב ${reason}
-תחנה זו
-תבוטל זמנית
+יחולו שיבושים
+בקווי השירות
 *לפרטים 8787`;
-
-    } else {
-      text =
-`עקב ${reason}
-תחנה זו תבוטל
-בין ${durationStartTime} - ${durationEndTime}
-לפרטים 8787*`;
-
-      leftText =
-`עקב ${reason}
-תחנה זו תבוטל
-בין ${durationStartTime} - ${durationEndTime}
-*לפרטים 8787`;
-    }
-
   } else {
+    text =
+`עקב ${reason}
+חלים שיבושים
+בקווי השירות
+לפרטים 8787*`;
 
-    const thirdLine = isTemporary
-      ? "מבוטלת זמנית"
-      : `מבוטלת עד ${durationEndTime}`;
+    leftText =
+`עקב ${reason}
+חלים שיבושים
+בקווי השירות
+*לפרטים 8787`;
+  }
 
+} else if (mode === "alert") {
+
+  if (isTemporary) {
     text =
 `עקב ${reason}
 תחנה זו
-${thirdLine}
+תבוטל זמנית
 לפרטים 8787*`;
 
     leftText =
 `עקב ${reason}
 תחנה זו
-${thirdLine}
+תבוטל זמנית
+*לפרטים 8787`;
+
+  } else {
+    text =
+`עקב ${reason}
+תחנה זו תבוטל
+בין ${durationStartTime} - ${durationEndTime}
+לפרטים 8787*`;
+
+    leftText =
+`עקב ${reason}
+תחנה זו תבוטל
+בין ${durationStartTime} - ${durationEndTime}
 *לפרטים 8787`;
   }
+
+} else {
+
+  const thirdLine = isTemporary
+    ? "מבוטלת זמנית"
+    : `מבוטלת עד ${durationEndTime}`;
+
+  text =
+`עקב ${reason}
+תחנה זו
+${thirdLine}
+לפרטים 8787*`;
+
+  leftText =
+`עקב ${reason}
+תחנה זו
+${thirdLine}
+*לפרטים 8787`;
+}
 
   document.getElementById("smsText").value = text;
   document.getElementById("smsTextLeft").value = leftText;
