@@ -206,8 +206,8 @@ function getDisplayEndTime(endHour) {
 }
   
 function generate() {
-  const startHour = Number(document.getElementById("startHour").value);
-  const endHour = Number(document.getElementById("endHour").value);
+  const startTime = localStorage.getItem("tachatzDurationStartTime") || "22:00";
+  const endTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
   const result = document.getElementById("result");
 
   const { startDate, endDate } = buildDates();
@@ -350,6 +350,7 @@ function clearResults() {
 function setMode(mode) {
   currentMode = mode;
   localStorage.setItem("tachatzMode", mode);
+
   document.getElementById("alertModeBtn").classList.remove("active");
   document.getElementById("durationModeBtn").classList.remove("active");
 
@@ -367,7 +368,11 @@ function setMode(mode) {
     // Default for משך
     document.getElementById("startHour").value = 22;
     document.getElementById("endHour").value = 5;
+
+    // Save the real cancellation hours for the sign message
+    saveDurationHours();
   }
+
   saveTachatzSettings();
 }
 
@@ -388,7 +393,7 @@ function saveDurationHours() {
   const endHour = Number(document.getElementById("endHour").value);
 
   const startTime = `${String(startHour).padStart(2, "0")}:00`;
-  const endTime = getDisplayEndTime(endHour);
+  const endTime = `${String(endHour).padStart(2, "0")}:00`;
 
   localStorage.setItem("tachatzDurationStartTime", startTime);
   localStorage.setItem("tachatzDurationEndTime", endTime);
@@ -397,6 +402,8 @@ function saveDurationHours() {
 fillDaySelectors();
 fillHourSelectors();
 saveTachatzSettings();
+localStorage.setItem("tachatzDurationStartTime", "22:00");
+localStorage.setItem("tachatzDurationEndTime", "05:00");
 </script>
 
 </body>
