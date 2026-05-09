@@ -323,7 +323,9 @@ const startHour = startValue === "now"
   : Number(startValue);
   const endHour = getEndHourValue();
 
-  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const startTime = startValue === "now"
+  ? getNowTime()
+  : `${String(startHour).padStart(2, "0")}:00`;
   const endTime = document.getElementById("endHour").value === "serviceEnd"
   ? "01:00"
   : getDisplayEndTime(endHour);
@@ -403,8 +405,13 @@ function setMode(mode) {
 }
 
 function generate() {
-  const startHour = Number(document.getElementById("startHour").value);
-  const endHour = Number(document.getElementById("endHour").value);
+  const startValue = document.getElementById("startHour").value;
+
+  const startHour = startValue === "now"
+    ? new Date().getHours()
+    : Number(startValue);
+
+  const endHour = getEndHourValue();
   const result = document.getElementById("result");
 
   const { startDate, endDate } = buildDates();
@@ -418,18 +425,20 @@ function generate() {
   let current = new Date(startDate);
   let lines = [];
 
-  const startTime = document.getElementById("startHour").value === "now"
-  ? getNowTime()
-  : `${String(startHour).padStart(2, "0")}:00`;
-  
-  const endTime = getDisplayEndTime(endHour);
+  const startTime = startValue === "now"
+    ? getNowTime()
+    : `${String(startHour).padStart(2, "0")}:00`;
+
+  const endTime = document.getElementById("endHour").value === "serviceEnd"
+    ? "01:00"
+    : getDisplayEndTime(endHour);
 
   while (current <= endDate) {
     let finishDate = new Date(current);
 
     if (document.getElementById("endHour").value === "serviceEnd" || endHour < startHour) {
-  finishDate = addDays(current, 1);
-}
+      finishDate = addDays(current, 1);
+    }
 
     lines.push(`
       <div class="result-row">
