@@ -1,1 +1,673 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>מחולל משמרות</title>
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 25px;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: end;
+    }
+
+    .field {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 9px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #1976d2;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    textarea {
+      height: 260px;
+      direction: ltr;
+      text-align: left;
+      line-height: 1.6;
+      white-space: pre;
+      margin-top: 15px;
+    }
+.results {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 70px 1fr 80px 70px;
+  gap: 6px;
+  align-items: center;
+}
+
+.result-cell {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  background: white;
+  direction: ltr;
+  text-align: center;
+  font-size: 15px;
+}
+
+.copy-small {
+  padding: 8px;
+  font-size: 14px;
+}
+    .clear-btn {
+  background: #6b7280;
+}
+
+.clear-btn:hover {
+  background: #4b5563;
+}
+
+    .mode-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0 18px;
+}
+
+.mode-btn {
+  background: #e5e7eb;
+  color: #111;
+  min-width: 100px;
+}
+
+.mode-btn.active {
+  background: #1976d2;
+  color: white;
+}
+    .event-type-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.event-type-btn {
+  background: #e5e7eb;
+  color: #111;
+  min-width: 100px;
+}
+
+.event-type-btn.active {
+  background: #1976d2;
+  color: white;
+}
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>סוג אירוע</h2>
+  <div class="event-type-row">
+  <button id="immediateEventBtn" class="event-type-btn active" onclick="setEventType('immediate')">זמן אמת</button>
+  <button id="futureEventBtn" class="event-type-btn" onclick="setEventType('future')">עתידי</button>
+</div>
+ <div id="modeSection">
+  <h2>זמני האירוע</h2>
+
+  <div class="mode-row">
+    <button id="durationModeBtn" class="mode-btn active" onclick="setMode('duration')">משך</button>
+    <button id="alertBtn" onclick="setMode('alert')" style="display:none;">
+  התראה
+</button>
+  </div>
+</div>
+
+  
+  <div class="row" id="dateRow">
+
+  <div class="field">
+    <label>יום בחודש</label>
+    <select id="startDay"></select>
+  </div>
+
+  <div class="field">
+    <label>כמה ימים</label>
+    <select id="dayCount"></select>
+  </div>
+
+</div>
+
+  <div class="row">
+
+  <div class="field">
+    <label>שעת התחלה</label>
+    <select id="startHour"></select>
+  </div>
+
+  <div class="field">
+    <label>שעת סיום</label>
+    <select id="endHour"></select>
+  </div>
+
+  <button onclick="generate()">צור רשימה</button>
+<button class="clear-btn" onclick="clearResults()">נקה הכל</button>
+
+</div>
+
+  <div id="result" class="results"></div>
+
+
+</div>
+
+<script>
+let currentMode = "duration";
+let currentEventType = "immediate";
+
+function formatDate(date) {
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+function addDays(date, days) {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + days);
+  return newDate;
+}
+
+function buildTime(hour, minute = 0) {
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+}
+
+function getDisplayEndTime(endHour) {
+  if (currentMode === "alert") {
+    return `${String(endHour - 1).padStart(2, "0")}:59`;
+  }
+
+  return buildTime(endHour, 0);
+}
+
+function getDaysInCurrentMonth() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function fillDaySelectors() {
+  const startDay = document.getElementById("startDay");
+  const dayCount = document.getElementById("dayCount");
+
+  const today = new Date();
+  const todayDay = today.getDate();
+  const daysInMonth = getDaysInCurrentMonth();
+
+  startDay.innerHTML = "";
+  dayCount.innerHTML = "";
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    startDay.innerHTML += `<option value="${day}">${day}</option>`;
+  }
+
+  for (let count = 1; count <= 31; count++) {
+    dayCount.innerHTML += `<option value="${count}">${count}</option>`;
+  }
+
+  startDay.value = todayDay;
+  dayCount.value = 1;
+}
+
+function getEndHourValue() {
+  const endValue = document.getElementById("endHour").value;
+
+  if (endValue === "serviceEnd") {
+    return 1;
+  }
+
+  if (endValue === "plusTwoHours") {
+    const plusTwo = new Date();
+    plusTwo.setHours(plusTwo.getHours() + 2);
+    return plusTwo.getHours();
+  }
+
+  return Number(endValue);
+}
+
+function getEndTimeText() {
+  const endValue = document.getElementById("endHour").value;
+
+  if (endValue === "serviceEnd") {
+    return "01:00";
+  }
+
+  if (endValue === "plusTwoHours") {
+    return getPlusTwoHoursTime();
+  }
+
+  return `${String(Number(endValue)).padStart(2, "0")}:00`;
+}
+
+function getPlusTwoHoursTime() {
+  const now = new Date();
+  now.setHours(now.getHours() + 2);
+
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
+  
+function fillHourSelectors() {
+  const startHour = document.getElementById("startHour");
+  const endHour = document.getElementById("endHour");
+
+  startHour.innerHTML = "";
+  endHour.innerHTML = "";
+endHour.innerHTML += `<option value="serviceEnd">סוף שירות</option>`;
+endHour.innerHTML += `<option value="plusTwoHours">עוד שעתיים</option>`;
+
+  for (let hour = 5; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    startHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+
+  for (let hour = 1; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    endHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+
+  startHour.value = 18;
+  endHour.value = 22;
+}
+
+function buildDates() {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const startDay = Number(document.getElementById("startDay").value);
+  const dayCount = Number(document.getElementById("dayCount").value);
+
+  const startDate = new Date(year, month, startDay);
+  const endDate = addDays(startDate, dayCount - 1);
+
+  return {
+    startDate,
+    endDate
+  };
+}
+
+function saveTachatzSettings() {
+  const startValue = document.getElementById("startHour").value;
+const startHour = startValue === "now"
+  ? new Date().getHours()
+  : Number(startValue);
+  const endHour = getEndHourValue();
+
+  const startTime = startValue === "now"
+  ? getNowTime()
+  : `${String(startHour).padStart(2, "0")}:00`;
+  let endTime;
+
+const endValue = document.getElementById("endHour").value;
+
+if (endValue === "serviceEnd") {
+  endTime = "01:00";
+} else if (endValue === "plusTwoHours") {
+  endTime = getPlusTwoHoursTime();
+} else {
+  endTime = getDisplayEndTime(endHour);
+}
+
+  localStorage.setItem("tachatzMode", currentMode);
+  localStorage.setItem("tachatzStartTime", startTime);
+  localStorage.setItem("tachatzEndTime", endTime);
+}
+
+function saveDurationHours() {
+  const startValue = document.getElementById("startHour").value;
+  const endValue = document.getElementById("endHour").value;
+
+  const startTime = startValue === "now"
+    ? getNowTime()
+    : `${String(Number(startValue)).padStart(2, "0")}:00`;
+
+  let endTime;
+
+if (endValue === "serviceEnd") {
+  endTime = "01:00";
+} else if (endValue === "plusTwoHours") {
+  endTime = getPlusTwoHoursTime();
+} else {
+  endTime = `${String(Number(endValue)).padStart(2, "0")}:00`;
+}
+
+  localStorage.setItem("tachatzDurationStartTime", startTime);
+  localStorage.setItem("tachatzDurationEndTime", endTime);
+
+  if (startValue !== "now") {
+    localStorage.setItem("tachatzDurationStartHour", Number(startValue));
+  }
+}
+
+function subtractHours(hour, hoursToSubtract) {
+  let result = hour - hoursToSubtract;
+
+  if (result < 0) {
+    result += 24;
+  }
+
+  return result;
+}
+
+function getAlertStartHour() {
+  const durationStartHour = Number(localStorage.getItem("tachatzDurationStartHour") || 22);
+  return subtractHours(durationStartHour, 4);
+}
+
+function getAlertEndHour() {
+  const durationStartHour = Number(localStorage.getItem("tachatzDurationStartHour") || 22);
+  return durationStartHour;
+}
+  
+function setMode(mode) {
+  currentMode = mode;
+  localStorage.setItem("tachatzMode", mode);
+
+  document.getElementById("alertModeBtn").classList.remove("active");
+  document.getElementById("durationModeBtn").classList.remove("active");
+
+  if (mode === "duration") {
+    document.getElementById("durationModeBtn").classList.add("active");
+
+    document.getElementById("startHour").value = 22;
+    document.getElementById("endHour").value = 5;
+
+    saveDurationHours();
+  }
+
+  if (mode === "alert") {
+    document.getElementById("alertModeBtn").classList.add("active");
+
+    const alertStartHour = getAlertStartHour();
+    const alertEndHour = getAlertEndHour();
+
+    document.getElementById("startHour").value = alertStartHour;
+    document.getElementById("endHour").value = alertEndHour;
+  }
+
+  saveTachatzSettings();
+}
+
+function generate() {
+  const startValue = document.getElementById("startHour").value;
+
+  const startHour = startValue === "now"
+    ? new Date().getHours()
+    : Number(startValue);
+
+  const endHour = getEndHourValue();
+  const result = document.getElementById("result");
+
+  const { startDate, endDate } = buildDates();
+
+  saveTachatzSettings();
+
+  if (currentMode === "duration") {
+    saveDurationHours();
+  }
+
+  let current = new Date(startDate);
+  let lines = [];
+
+  const startTime = startValue === "now"
+    ? getNowTime()
+    : `${String(startHour).padStart(2, "0")}:00`;
+
+  let endTime;
+
+const endValue = document.getElementById("endHour").value;
+
+if (endValue === "serviceEnd") {
+  endTime = "01:00";
+} else if (endValue === "plusTwoHours") {
+  endTime = getPlusTwoHoursTime();
+} else {
+  endTime = getDisplayEndTime(endHour);
+}
+
+  while (current <= endDate) {
+    let finishDate = new Date(current);
+
+    if (
+  endValue === "serviceEnd" ||
+  endHour < startHour
+) {
+  finishDate = addDays(current, 1);
+}
+
+    lines.push(`
+      <div class="result-row">
+
+        <div class="result-cell">
+          ${formatDate(current)}
+        </div>
+
+        <div class="result-cell">
+          ${startTime}
+        </div>
+
+        <button class="copy-small"
+          onclick="copySingle('${formatDate(current)} ${startTime}')">
+          העתק
+        </button>
+
+        <div class="result-cell">
+          ${formatDate(finishDate)}
+        </div>
+
+        <div class="result-cell">
+          ${endTime}
+        </div>
+
+        <button class="copy-small"
+          onclick="copySingle('${formatDate(finishDate)} ${endTime}')">
+          העתק
+        </button>
+
+      </div>
+    `);
+
+    current = addDays(current, 1);
+  }
+
+  result.innerHTML = lines.join("");
+}
+
+function copySingle(text) {
+  navigator.clipboard.writeText(text);
+}
+
+function clearResults() {
+  document.getElementById("result").innerHTML = "";
+
+  const today = new Date();
+
+  document.getElementById("startDay").value = today.getDate();
+  document.getElementById("dayCount").value = 1;
+
+  if (currentEventType === "immediate") {
+    // Keep the visual state of זמן אמת
+    document.getElementById("dateRow").style.display = "none";
+    document.getElementById("alertModeBtn").style.visibility = "hidden";
+
+    // Keep only משך active
+    currentMode = "duration";
+    localStorage.setItem("tachatzMode", "duration");
+
+    document.getElementById("durationModeBtn").classList.add("active");
+    document.getElementById("alertModeBtn").classList.remove("active");
+
+    // Restore real-time defaults
+    document.getElementById("startHour").innerHTML = `<option value="now">עכשיו</option>`;
+    document.getElementById("startHour").value = "now";
+    document.getElementById("endHour").value = "plusTwoHours";
+    
+    saveDurationHours();
+    saveTachatzSettings();
+    return;
+  }
+
+  // Future event mode
+  document.getElementById("dateRow").style.display = "flex";
+  document.getElementById("alertModeBtn").style.visibility = "visible";
+
+  if (currentMode === "duration") {
+    restoreStartHourOptions();
+
+    document.getElementById("startHour").value = 22;
+    document.getElementById("endHour").value = 5;
+
+    saveDurationHours();
+  }
+
+  if (currentMode === "alert") {
+    restoreStartHourOptions();
+
+    const alertStartHour = getAlertStartHour();
+    const alertEndHour = getAlertEndHour();
+
+    document.getElementById("startHour").value = alertStartHour;
+    document.getElementById("endHour").value = alertEndHour;
+  }
+
+  saveTachatzSettings();
+}
+
+
+  function setEventType(type) {
+  currentEventType = type;
+  localStorage.setItem("tachatzEventType", type);
+
+  document.getElementById("immediateEventBtn").classList.remove("active");
+  document.getElementById("futureEventBtn").classList.remove("active");
+
+  if (type === "immediate") {
+    document.getElementById("modeSection").style.display = "none";
+    document.getElementById("immediateEventBtn").classList.add("active");
+    document.getElementById("dateRow").style.display = "none";
+    document.getElementById("alertModeBtn").style.visibility = "hidden";
+
+    setMode("duration");
+    setRealTimeDefaults();
+  }
+
+  if (type === "future") {
+    document.getElementById("modeSection").style.display = "block";
+    document.getElementById("futureEventBtn").classList.add("active");
+    document.getElementById("dateRow").style.display = "flex";
+    document.getElementById("alertModeBtn").style.visibility = "visible";
+
+    restoreStartHourOptions();
+    setMode("duration");
+  }
+}
+  
+function restoreStartHourOptions() {
+  const startHour = document.getElementById("startHour");
+
+  startHour.innerHTML = "";
+
+  for (let hour = 0; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    startHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+}
+  
+function setRealTimeDefaults() {
+  const now = new Date();
+
+  document.getElementById("startDay").value = now.getDate();
+  document.getElementById("dayCount").value = 1;
+
+  // Start time is special in real-time mode
+  document.getElementById("startHour").innerHTML = `<option value="now">עכשיו</option>`;
+  document.getElementById("startHour").value = "now";
+
+  // End time = two hours
+document.getElementById("endHour").value = "plusTwoHours";
+  
+  saveDurationHours();
+  saveTachatzSettings();
+}
+
+  
+function getNowTime() {
+  const now = new Date();
+
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
+  
+fillDaySelectors();
+fillHourSelectors();
+
+document.getElementById("startHour").value = 22;
+document.getElementById("endHour").value = 5;
+
+saveDurationHours();
+saveTachatzSettings();
+
+  localStorage.setItem("tachatzMode", "duration");
+  setEventType(currentEventType);
+  setMode("duration");
+  
+</script>
+</body>
+</html>
