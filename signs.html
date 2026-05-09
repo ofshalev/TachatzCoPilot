@@ -261,18 +261,20 @@ textarea {
 בין ${durationStartTime} - ${durationEndTime}
 *לפרטים 8787`;
   } else {
-    text =
+  const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
+
+  text =
 `עקב ${reason}
 תחנה זו
-מבוטלת עד
+מבוטלת עד ${durationEndTime}
 לפרטים 8787*`;
 
-    leftText =
+  leftText =
 `עקב ${reason}
 תחנה זו
-מבוטלת עד
+מבוטלת עד ${durationEndTime}
 *לפרטים 8787`;
-  }
+}
 
   document.getElementById("smsText").value = text;
   document.getElementById("smsTextLeft").value = leftText;
