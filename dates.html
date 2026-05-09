@@ -491,17 +491,43 @@ function clearResults() {
   document.getElementById("dayCount").value = 1;
 
   if (currentEventType === "immediate") {
-    setRealTimeDefaults();
+    // Keep the visual state of זמן אמת
+    document.getElementById("dateRow").style.display = "none";
+    document.getElementById("alertModeBtn").style.visibility = "hidden";
+
+    // Keep only משך active
+    currentMode = "duration";
+    localStorage.setItem("tachatzMode", "duration");
+
+    document.getElementById("durationModeBtn").classList.add("active");
+    document.getElementById("alertModeBtn").classList.remove("active");
+
+    // Restore real-time defaults
+    document.getElementById("startHour").innerHTML = `<option value="now">עכשיו</option>`;
+    document.getElementById("startHour").value = "now";
+    document.getElementById("endHour").value = "serviceEnd";
+
+    saveDurationHours();
+    saveTachatzSettings();
     return;
   }
 
+  // Future event mode
+  document.getElementById("dateRow").style.display = "flex";
+  document.getElementById("alertModeBtn").style.visibility = "visible";
+
   if (currentMode === "duration") {
+    restoreStartHourOptions();
+
     document.getElementById("startHour").value = 22;
     document.getElementById("endHour").value = 5;
+
     saveDurationHours();
   }
 
   if (currentMode === "alert") {
+    restoreStartHourOptions();
+
     const alertStartHour = getAlertStartHour();
     const alertEndHour = getAlertEndHour();
 
@@ -511,7 +537,6 @@ function clearResults() {
 
   saveTachatzSettings();
 }
-
 if (currentMode === "alert") {
   const alertStartHour = getAlertStartHour();
   const alertEndHour = getAlertEndHour();
