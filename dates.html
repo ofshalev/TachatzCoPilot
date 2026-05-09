@@ -343,7 +343,7 @@ function clearResults() {
 
 function setMode(mode) {
   currentMode = mode;
-
+  localStorage.setItem("tachatzMode", mode);
   document.getElementById("alertModeBtn").classList.remove("active");
   document.getElementById("durationModeBtn").classList.remove("active");
 
@@ -366,6 +366,7 @@ function setMode(mode) {
   
 fillDaySelectors();
 fillHourSelectors();
+localStorage.setItem("tachatzMode", currentMode);
 </script>
 
 </body>
