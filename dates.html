@@ -282,6 +282,12 @@ function buildDates() {
 }
   function clearResults() {
   document.getElementById("result").innerHTML = "";
+
+  document.getElementById("fromDay").selectedIndex = 0;
+  document.getElementById("toDay").selectedIndex = 0;
+
+  document.getElementById("startHour").value = 22;
+  document.getElementById("endHour").value = 5;
 }
 fillDaySelectors();
 fillHourSelectors();
