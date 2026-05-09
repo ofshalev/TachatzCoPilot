@@ -296,7 +296,10 @@ function buildDates() {
 }
 
 function saveTachatzSettings() {
-  const startHour = Number(document.getElementById("startHour").value);
+  const startValue = document.getElementById("startHour").value;
+const startHour = startValue === "now"
+  ? new Date().getHours()
+  : Number(startValue);
   const endHour = Number(document.getElementById("endHour").value);
 
   const startTime = `${String(startHour).padStart(2, "0")}:00`;
@@ -308,17 +311,21 @@ function saveTachatzSettings() {
 }
 
 function saveDurationHours() {
-  const startHour = Number(document.getElementById("startHour").value);
+  const startValue = document.getElementById("startHour").value;
   const endHour = Number(document.getElementById("endHour").value);
 
-  const startTime = `${String(startHour).padStart(2, "0")}:00`;
-  const endTime = `${String(endHour).padStart(2, "0")}:00`;
+  const startTime = startValue === "now"
+    ? getNowTime()
+    : `${String(Number(startValue)).padStart(2, "0")}:00`;
 
-  localStorage.setItem("tachatzDurationStartHour", startHour);
-  localStorage.setItem("tachatzDurationEndHour", endHour);
+  const endTime = `${String(endHour).padStart(2, "0")}:00`;
 
   localStorage.setItem("tachatzDurationStartTime", startTime);
   localStorage.setItem("tachatzDurationEndTime", endTime);
+
+  if (startValue !== "now") {
+    localStorage.setItem("tachatzDurationStartHour", Number(startValue));
+  }
 }
 
 function subtractHours(hour, hoursToSubtract) {
@@ -386,7 +393,10 @@ function generate() {
   let current = new Date(startDate);
   let lines = [];
 
-  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const startTime = document.getElementById("startHour").value === "now"
+  ? getNowTime()
+  : `${String(startHour).padStart(2, "0")}:00`;
+  
   const endTime = getDisplayEndTime(endHour);
 
   while (current <= endDate) {
@@ -471,42 +481,63 @@ saveTachatzSettings();
   document.getElementById("futureEventBtn").classList.remove("active");
 
   if (type === "immediate") {
-  document.getElementById("immediateEventBtn").classList.add("active");
+    document.getElementById("immediateEventBtn").classList.add("active");
 
-  // Hide התראה but keep its space
-  document.getElementById("alertModeBtn").style.visibility = "hidden";
+    document.getElementById("alertModeBtn").style.visibility = "hidden";
 
-  // Force משך mode
-  setMode("duration");
-
-  // זמן אמת default: now until two hours from now
-  setRealTimeDefaults();
-}
+    setMode("duration");
+    setRealTimeDefaults();
+  }
 
   if (type === "future") {
     document.getElementById("futureEventBtn").classList.add("active");
 
-    // In future mode, show both duration and alert
     document.getElementById("alertModeBtn").style.visibility = "visible";
+
+    restoreStartHourOptions();
+    setMode("duration");
   }
 }
+  
+function restoreStartHourOptions() {
+  const startHour = document.getElementById("startHour");
 
+  startHour.innerHTML = "";
+
+  for (let hour = 0; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    startHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+}
+  
 function setRealTimeDefaults() {
   const now = new Date();
   const end = new Date(now);
   end.setHours(end.getHours() + 2);
 
-  const startHour = now.getHours();
   const endHour = end.getHours();
 
   document.getElementById("startDay").value = now.getDate();
   document.getElementById("dayCount").value = 1;
 
-  document.getElementById("startHour").value = startHour;
+  // Start time is special in real-time mode
+  document.getElementById("startHour").innerHTML = `<option value="now">עכשיו</option>`;
+  document.getElementById("startHour").value = "now";
+
+  // End time remains normal hour dropdown
   document.getElementById("endHour").value = endHour;
 
   saveDurationHours();
   saveTachatzSettings();
+}
+
+function getNowTime() {
+  const now = new Date();
+
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  return `${hours}:${minutes}`;
 }
   
 fillDaySelectors();
