@@ -256,12 +256,33 @@ function fillDaySelectors() {
   dayCount.value = 1;
 }
 
+function getEndHourValue() {
+  const endValue = document.getElementById("endHour").value;
+
+  if (endValue === "serviceEnd") {
+    return 1;
+  }
+
+  return Number(endValue);
+}
+
+function getEndTimeText() {
+  const endValue = document.getElementById("endHour").value;
+
+  if (endValue === "serviceEnd") {
+    return "01:00";
+  }
+
+  return `${String(Number(endValue)).padStart(2, "0")}:00`;
+}
+  
 function fillHourSelectors() {
   const startHour = document.getElementById("startHour");
   const endHour = document.getElementById("endHour");
 
   startHour.innerHTML = "";
   endHour.innerHTML = "";
+  endHour.innerHTML += `<option value="serviceEnd">סוף שירות</option>`;
 
   for (let hour = 5; hour <= 23; hour++) {
     const value = String(hour).padStart(2, "0");
@@ -300,10 +321,12 @@ function saveTachatzSettings() {
 const startHour = startValue === "now"
   ? new Date().getHours()
   : Number(startValue);
-  const endHour = Number(document.getElementById("endHour").value);
+  const endHour = getEndHourValue();
 
   const startTime = `${String(startHour).padStart(2, "0")}:00`;
-  const endTime = getDisplayEndTime(endHour);
+  const endTime = document.getElementById("endHour").value === "serviceEnd"
+  ? "01:00"
+  : getDisplayEndTime(endHour);
 
   localStorage.setItem("tachatzMode", currentMode);
   localStorage.setItem("tachatzStartTime", startTime);
@@ -312,13 +335,15 @@ const startHour = startValue === "now"
 
 function saveDurationHours() {
   const startValue = document.getElementById("startHour").value;
-  const endHour = Number(document.getElementById("endHour").value);
+  const endValue = document.getElementById("endHour").value;
 
   const startTime = startValue === "now"
     ? getNowTime()
     : `${String(Number(startValue)).padStart(2, "0")}:00`;
 
-  const endTime = `${String(endHour).padStart(2, "0")}:00`;
+  const endTime = endValue === "serviceEnd"
+    ? "01:00"
+    : `${String(Number(endValue)).padStart(2, "0")}:00`;
 
   localStorage.setItem("tachatzDurationStartTime", startTime);
   localStorage.setItem("tachatzDurationEndTime", endTime);
@@ -402,9 +427,9 @@ function generate() {
   while (current <= endDate) {
     let finishDate = new Date(current);
 
-    if (endHour < startHour) {
-      finishDate = addDays(current, 1);
-    }
+    if (document.getElementById("endHour").value === "serviceEnd" || endHour < startHour) {
+  finishDate = addDays(current, 1);
+}
 
     lines.push(`
       <div class="result-row">
@@ -512,10 +537,6 @@ function restoreStartHourOptions() {
   
 function setRealTimeDefaults() {
   const now = new Date();
-  const end = new Date(now);
-  end.setHours(end.getHours() + 2);
-
-  const endHour = end.getHours();
 
   document.getElementById("startDay").value = now.getDate();
   document.getElementById("dayCount").value = 1;
@@ -524,13 +545,14 @@ function setRealTimeDefaults() {
   document.getElementById("startHour").innerHTML = `<option value="now">עכשיו</option>`;
   document.getElementById("startHour").value = "now";
 
-  // End time remains normal hour dropdown
-  document.getElementById("endHour").value = endHour;
+  // End time = next day at 01:00
+  document.getElementById("endHour").value = "serviceEnd";
 
   saveDurationHours();
   saveTachatzSettings();
 }
 
+  
 function getNowTime() {
   const now = new Date();
 
