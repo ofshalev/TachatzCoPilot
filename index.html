@@ -1,10 +1,75 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+<title>Mehirot CoPilot</title>
 <head>
-  <meta charset="UTF-8" />
-  <title>תחב״צ CoPilot</title>
-
+  <meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* keeps them side by side */
+  gap: 60px;                   /* space between picture and text */
+  direction: ltr;              /* prevents RTL weirdness */
+}
+
+.img {
+  width: 350px;
+  flex-shrink: 0;              /* 👈 VERY IMPORTANT (prevents shrinking) */
+}
+
+.title {
+  font-family: 'Rubik', sans-serif;
+  font-size: 170px;
+  margin: 0;
+}
+.tabs {
+  display: flex;
+  justify-content: center; /* 👈 centers horizontally */
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tab {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  background: #e5e7eb;
+  cursor: pointer;
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+}
+
+.tab.active {
+  background: #2563eb;
+  color: white;
+}
+
+.tab-content {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+:root {
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --border: #d7deea;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --item-bg: #f8fafc;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -12,169 +77,459 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      direction: rtl;
-      background: #f3f5f7;
-      color: #222;
+      background: var(--bg);
+      color: var(--text);
     }
 
     .app {
-      max-width: 1300px;
-      margin: 0 auto;
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
       padding: 18px;
     }
 
-    header {
-      background: white;
-      border-radius: 16px;
-      padding: 18px 24px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    .header-panel {
+      margin-bottom: 18px;
       text-align: center;
     }
 
-    header h1 {
+    .header-panel h1 {
       margin: 0;
       font-size: 30px;
     }
 
-    header p {
-      margin: 6px 0 0;
-      color: #666;
-      font-size: 15px;
+    .header-panel p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      justify-content: center;
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 18px;
+      align-items: start;
     }
 
-    .tab-btn {
-      border: none;
-      background: #e3e7ec;
-      padding: 11px 18px;
-      border-radius: 999px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-      min-width: 130px;
+    .panel-title {
+      margin: 0 0 14px;
+      font-size: 20px;
     }
 
-    .tab-btn:hover {
-      background: #d3dae3;
-    }
-
-    .tab-btn.active {
-      background: #1f6feb;
-      color: white;
-      font-weight: bold;
-      box-shadow: 0 2px 8px rgba(31,111,235,0.35);
-    }
-
-    .tab-content {
-      display: none;
-      background: white;
-      border-radius: 16px;
-      padding: 20px;
-      min-height: 500px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    }
-
-    .tab-content.active {
+    label {
       display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      font-size: 14px;
     }
 
-    .placeholder {
-      border: 2px dashed #cfd6df;
-      border-radius: 14px;
-      padding: 30px;
-      text-align: center;
-      color: #777;
-      font-size: 18px;
-      background: #fafafa;
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
     }
 
-    .placeholder h2 {
-      margin-top: 0;
-      color: #333;
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.05s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .primary-btn {
+      background: var(--primary);
+      color: white;
+    }
+
+    .primary-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .secondary-btn {
+      background: #475569;
+      color: white;
+    }
+
+    .secondary-btn:hover {
+      background: #334155;
+    }
+
+    .danger-btn {
+      background: #e5e7eb;
+      color: #374151;
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
+    .danger-btn:hover {
+      background: #d1d5db;
+    }
+
+    .flash-success {
+      background: var(--success) !important;
+      color: white !important;
+    }
+
+    .report-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .report-item {
+      background: var(--item-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .report-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .report-time {
+      font-weight: bold;
+      color: var(--primary);
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 8px 0;
+    }
+
+    .output-box {
+      width: 100%;
+      min-height: 420px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+
+
+.small-btn {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.tool-frame {
+  width: 100%;
+  height: 820px;  /* try 780 / 800 / 820 */
+  border: none;
+  border-radius: 16px;
+  background: white;
+}
+
+    html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+    
   </style>
 </head>
 
 <body>
-  <div class="app">
 
-    <header>
-      <h1>Tachatz CoPilot</h1>
-    </header>
+<div class="header">
+  <img src="mehirot.jpg" class="img">
 
-    <nav class="tabs">
-      <button class="tab-btn active" onclick="openTab('blockageTab', this)">דיווח חסימה</button>
-      <button class="tab-btn" onclick="openTab('stopCancelTab', this)">ביטול תחנות</button>
-      <button class="tab-btn" onclick="openTab('operatorMsgTab', this)">הודעה למפעיל</button>
-      <button class="tab-btn" onclick="openTab('deviationTab', this)">סטייה</button>
-      <button class="tab-btn" onclick="openTab('eventLogTab', this)">יומן אירוע</button>
-    </nav>
+  <h1 class="title">Tachatz CoPilot</h1>
+</div>
 
-    <main>
+<div class="tabs">
+  <button class="tab active" onclick="openTab('events', this)">פתיחת אירוע</button>
+  <button class="tab" onclick="openTab('signs', this)">שילוט</button>
+  <button class="tab" onclick="openTab('messages', this)">מפתחים</button>
+  
+</div>
 
-      <section id="blockageTab" class="tab-content active">
-        <div class="placeholder">
-          <h2>דיווח חסימה</h2>
-          <p>כאן נבנה בהמשך מחולל הודעת חסימה.</p>
-        </div>
-      </section>
+<div id="log" class="tab-content active">
+  <iframe src="events.html" class="tool-frame"></iframe>
+</div>
 
-      <section id="stopCancelTab" class="tab-content">
-        <div class="placeholder">
-          <h2>ביטול תחנות</h2>
-          <p>כאן נבנה בהמשך מחולל הודעות ביטול תחנות.</p>
-        </div>
-      </section>
+<div id="traffic" class="tab-content">
+  <iframe src="signs.html" class="tool-frame"></iframe>
+</div>
 
-      <section id="operatorMsgTab" class="tab-content">
-        <div class="placeholder">
-          <h2>הודעה למפעיל</h2>
-          <p>כאן נבנה בהמשך הודעות מוכנות למפעילים.</p>
-        </div>
-      </section>
+<div id="sms" class="tab-content">
+  <iframe src="messages.html" class="tool-frame"></iframe>
+</div>
 
-      <section id="deviationTab" class="tab-content">
-        <div class="placeholder">
-          <h2>סטייה</h2>
-          <p>כאן נבנה בהמשך כלי סטיות וקישור למערכת Octobus.</p>
-        </div>
-      </section>
+<script>
 
-      <section id="eventLogTab" class="tab-content">
-        <div class="placeholder">
-          <h2>יומן אירוע</h2>
-          <p>כאן נבנה בהמשך יומן לניהול אירוע בזמן אמת.</p>
-        </div>
-      </section>
+  
+function openTab(tabId, btn) {
+  // hide all content
+  document.querySelectorAll('.tab-content').forEach(tab => {
+    tab.classList.remove('active');
+  });
 
-    </main>
+  // remove active from all buttons
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
 
-  </div>
+  // show selected
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
 
-  <script>
-    function openTab(tabId, button) {
-      const contents = document.querySelectorAll(".tab-content");
-      const buttons = document.querySelectorAll(".tab-btn");
 
-      contents.forEach(content => {
-        content.classList.remove("active");
-      });
 
-      buttons.forEach(btn => {
-        btn.classList.remove("active");
-      });
+    const reports = [];
 
-      document.getElementById(tabId).classList.add("active");
-      button.classList.add("active");
+    function getCurrentTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
     }
-  </script>
+
+    function addReport(button) {
+      const input = document.getElementById('reportInput');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      reports.push({
+        time: getCurrentTime(),
+        text: text,
+        color: '',
+        isEditing: false
+      });
+
+      input.value = '';
+      renderReports();
+      flashButton(button);
+      input.focus();
+    }
+
+    function renderReports() {
+      const list = document.getElementById('reportList');
+      const fullOutput = document.getElementById('fullOutput');
+
+      if (reports.length === 0) {
+        list.innerHTML = '<div class="empty-state">עדיין לא נוספו דיווחים.</div>';
+        fullOutput.textContent = '';
+        return;
+      }
+
+    list.innerHTML = reports.map((report, index) => `
+  <div class="report-item ${report.color}" onclick="handleReportClick(event, ${index})">
+    <div class="report-top">
+      <div class="report-time">${report.time}</div>
+      <div style="display:flex; gap:6px;">
+        ${
+        report.isEditing
+          ? `
+        <button class="small-btn" onclick="event.stopPropagation(); cancelEdit(${index})">בטל שינויים</button>
+        <button class="secondary-btn small-btn" onclick="event.stopPropagation(); toggleEdit(${index})">שמור</button>
+          `
+          : `
+            <button class="secondary-btn small-btn" onclick="event.stopPropagation(); toggleEdit(${index})">ערוך</button>
+          `
+        }
+        <button class="danger-btn" onclick="event.stopPropagation(); deleteReport(${index}, this)">מחק</button>
+      </div>
+    </div>
+
+    ${
+    report.isEditing
+        ? `<textarea id="edit-${index}" class="report-edit" onclick="event.stopPropagation()">${report.text}</textarea>`
+        : `<div id="text-${index}" class="report-text" onclick="event.stopPropagation()">${escapeHtml(report.text)}</div>`
+    }
+  </div>
+`).join('');
+
+      fullOutput.textContent = reports
+        .map(report => `${report.time} - ${report.text}`)
+        .join('\n');
+    }
+
+function handleReportClick(event, index) {
+  const textarea = document.getElementById(`edit-${index}`);
+  if (textarea && textarea.style.display === 'block') {
+    return;
+  }
+  cycleColor(index);
+}
+    
+    function deleteReport(index, button) {
+      reports.splice(index, 1);
+      renderReports();
+      flashButton(button);
+    }
+
+    function clearInput(button) {
+      document.getElementById('reportInput').value = '';
+      flashButton(button);
+    }
+
+    function clearAllReports(button) {
+      reports.length = 0;
+      renderReports();
+      flashButton(button);
+    }
+
+    function copyFullLog(button) {
+      const text = document.getElementById('fullOutput').textContent.trim();
+      if (!text) return;
+
+      copyText(text);
+      flashButton(button);
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+    }
+
+    function flashButton(button) {
+      if (!button) return;
+      button.classList.add('flash-success');
+      setTimeout(() => {
+        button.classList.remove('flash-success');
+      }, 250);
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+
+function toggleEdit(index) {
+  const report = reports[index];
+  report.isEditing = !report.isEditing;
+
+  if (!report.isEditing) {
+    // save
+    const textarea = document.getElementById(`edit-${index}`);
+    report.text = textarea.value;
+  }
+
+  renderReports();
+}
+
+function cancelEdit(index) {
+  reports[index].isEditing = false;
+  renderReports();
+}
+    
+    function cycleColor(index) {
+  const colors = ['', 'color-red', 'color-yellow', 'color-green', 'color-blue', 'color-brown'];
+  const current = reports[index].color;
+  const currentIndex = colors.indexOf(current);
+  const nextIndex = (currentIndex + 1) % colors.length;
+  reports[index].color = colors[nextIndex];
+  renderReports();
+}
+
+function closeAllEdits() {
+  reports.forEach((report, index) => {
+    const textDiv = document.getElementById(`text-${index}`);
+    const textarea = document.getElementById(`edit-${index}`);
+    const editButton = document.querySelector(
+      `button[onclick*="toggleEdit(${index}"]`
+    );
+
+    if (textarea && textarea.style.display === 'block') {
+      report.text = textarea.value;
+      if (textDiv) textDiv.style.display = 'block';
+      textarea.style.display = 'none';
+      if (editButton) editButton.textContent = 'ערוך';
+    }
+  });
+}
+
+
+    
+    document.getElementById('reportInput').addEventListener('keydown', function(event) {
+      if (event.ctrlKey && event.key === 'Enter') {
+        addReport();
+      }
+    });
+
+    renderReports();
+
+
+
+</script>
+
 </body>
 </html>
