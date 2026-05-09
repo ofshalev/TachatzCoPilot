@@ -198,6 +198,18 @@ textarea {
   max-width: 240px !important;
   box-sizing: border-box !important;
 }
+  .temporary-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.temporary-check input {
+  width: auto;
+}
   </style>
 </head>
 
@@ -216,6 +228,10 @@ textarea {
       <option value="חסימה">חסימה</option>
       <option value="רכב תקוע">רכב תקוע</option>
     </select>
+    <label class="temporary-check">
+       <input type="checkbox" id="temporaryCancel" onchange="generateSMS()">
+       ביטול זמני
+      </label>
   </div>
 
   <div class="box-section message-box">
@@ -238,6 +254,7 @@ textarea {
 <script>
  function generateSMS() {
   const reason = document.getElementById("reason").value;
+   const isTemporary = document.getElementById("temporaryCancel").checked;
 
   const mode = localStorage.getItem("tachatzMode") || "alert";
 
@@ -260,19 +277,23 @@ textarea {
 תחנה זו תבוטל
 בין ${durationStartTime} - ${durationEndTime}
 *לפרטים 8787`;
-  } else {
+ } else {
   const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
+
+  const thirdLine = isTemporary
+    ? "מבוטלת זמנית"
+    : `מבוטלת עד ${durationEndTime}`;
 
   text =
 `עקב ${reason}
 תחנה זו
-מבוטלת עד ${durationEndTime}
+${thirdLine}
 לפרטים 8787*`;
 
   leftText =
 `עקב ${reason}
 תחנה זו
-מבוטלת עד ${durationEndTime}
+${thirdLine}
 *לפרטים 8787`;
 }
 
