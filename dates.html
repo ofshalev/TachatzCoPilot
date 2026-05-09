@@ -229,7 +229,7 @@ function fillDaySelectors() {
   }
 
   startDay.value = todayDay;
-  dayCount.value = 0;
+  dayCount.value = 1;
 }
 
 function fillHourSelectors() {
@@ -263,7 +263,7 @@ function buildDates() {
   const dayCount = Number(document.getElementById("dayCount").value);
 
   const startDate = new Date(year, month, startDay);
-  const endDate = addDays(startDate, dayCount);
+  const endDate = addDays(startDate, dayCount - 1);
 
   return {
     startDate,
@@ -420,7 +420,7 @@ function clearResults() {
   const today = new Date();
 
 document.getElementById("startDay").value = today.getDate();
-document.getElementById("dayCount").value = 0;
+document.getElementById("dayCount").value = 1;
 
   if (currentMode === "duration") {
   document.getElementById("startHour").value = 22;
