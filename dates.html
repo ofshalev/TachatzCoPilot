@@ -287,8 +287,8 @@ function copyText() {
     endHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
   }
 
-  startHour.value = 22;
-  endHour.value = 5;
+  startHour.value = 18;
+endHour.value = 22;
 }
 function fillDaySelectors() {
   const fromDay = document.getElementById("fromDay");
@@ -322,14 +322,21 @@ function buildDates() {
     endDate
   };
 }
-  function clearResults() {
+function clearResults() {
   document.getElementById("result").innerHTML = "";
 
   document.getElementById("fromDay").selectedIndex = 0;
   document.getElementById("toDay").selectedIndex = 0;
 
-  document.getElementById("startHour").value = 22;
-  document.getElementById("endHour").value = 5;
+  if (currentMode === "alert") {
+    document.getElementById("startHour").value = 18;
+    document.getElementById("endHour").value = 22;
+  }
+
+  if (currentMode === "duration") {
+    document.getElementById("startHour").value = 22;
+    document.getElementById("endHour").value = 5;
+  }
 }
 
   let currentMode = "alert";
@@ -342,10 +349,18 @@ function setMode(mode) {
 
   if (mode === "alert") {
     document.getElementById("alertModeBtn").classList.add("active");
+
+    // Default for התראה
+    document.getElementById("startHour").value = 18;
+    document.getElementById("endHour").value = 22;
   }
 
   if (mode === "duration") {
     document.getElementById("durationModeBtn").classList.add("active");
+
+    // Default for משך
+    document.getElementById("startHour").value = 22;
+    document.getElementById("endHour").value = 5;
   }
 }
   
