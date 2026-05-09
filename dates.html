@@ -121,16 +121,20 @@
 </div>
 
   <div class="row">
-    <div class="field">
-      <label>סוג משמרת</label>
-      <select id="shiftType">
-        <option value="night">לילה 22:00 - 05:00</option>
-        <option value="evening">ערב 18:00 - 21:59</option>
-      </select>
-    </div>
 
-    <button onclick="generate()">צור רשימה</button>
+  <div class="field">
+    <label>שעת התחלה</label>
+    <select id="startHour"></select>
   </div>
+
+  <div class="field">
+    <label>שעת סיום</label>
+    <select id="endHour"></select>
+  </div>
+
+  <button onclick="generate()">צור רשימה</button>
+
+</div>
 
   <div id="result" class="results"></div>
 
@@ -152,7 +156,8 @@ function addDays(date, days) {
 }
 
 function generate() {
-  const shiftType = document.getElementById("shiftType").value;
+  const startHour = Number(document.getElementById("startHour").value);
+  const endHour = Number(document.getElementById("endHour").value);
   const result = document.getElementById("result");
 
   const { startDate, endDate } = buildDates();
@@ -160,83 +165,55 @@ function generate() {
   let current = new Date(startDate);
   let lines = [];
 
+  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const endTime = `${String(endHour).padStart(2, "0")}:00`;
+
   while (current <= endDate) {
-    if (shiftType === "night") {
-      const nextDay = addDays(current, 1);
+    let finishDate = new Date(current);
 
-      lines.push(`
-  <div class="result-row">
-
-    <div class="result-cell">
-      ${formatDate(current)}
-    </div>
-
-    <div class="result-cell">
-      22:00
-    </div>
-
-    <button class="copy-small"
-      onclick="copySingle('${formatDate(current)} 22:00')">
-      העתק
-    </button>
-
-    <div class="result-cell">
-      ${formatDate(nextDay)}
-    </div>
-
-    <div class="result-cell">
-      05:00
-    </div>
-
-    <button class="copy-small"
-      onclick="copySingle('${formatDate(nextDay)} 05:00')">
-      העתק
-    </button>
-
-  </div>
-`);
+    // If the ending hour is smaller than the starting hour,
+    // the ending date is the next day.
+    if (endHour < startHour) {
+      finishDate = addDays(current, 1);
     }
 
-    if (shiftType === "evening") {
-      lines.push(`
-  <div class="result-row">
+    lines.push(`
+      <div class="result-row">
 
-    <div class="result-cell">
-      ${formatDate(current)}
-    </div>
+        <div class="result-cell">
+          ${formatDate(current)}
+        </div>
 
-    <div class="result-cell">
-      18:00
-    </div>
+        <div class="result-cell">
+          ${startTime}
+        </div>
 
-    <button class="copy-small"
-      onclick="copySingle('${formatDate(current)} 18:00')">
-      העתק
-    </button>
+        <button class="copy-small"
+          onclick="copySingle('${formatDate(current)} ${startTime}')">
+          העתק
+        </button>
 
-    <div class="result-cell">
-      ${formatDate(current)}
-    </div>
+        <div class="result-cell">
+          ${formatDate(finishDate)}
+        </div>
 
-    <div class="result-cell">
-      21:59
-    </div>
+        <div class="result-cell">
+          ${endTime}
+        </div>
 
-    <button class="copy-small"
-      onclick="copySingle('${formatDate(current)} 21:59')">
-      העתק
-    </button>
+        <button class="copy-small"
+          onclick="copySingle('${formatDate(finishDate)} ${endTime}')">
+          העתק
+        </button>
 
-  </div>
-`);
-    }
+      </div>
+    `);
 
     current = addDays(current, 1);
   }
 
   result.innerHTML = lines.join("");
 }
-
 function copySingle(text) {
   navigator.clipboard.writeText(text);
 }
@@ -245,6 +222,23 @@ function copyText() {
   const text = document.getElementById("result");
   text.select();
   document.execCommand("copy");
+}
+  function fillHourSelectors() {
+  const startHour = document.getElementById("startHour");
+  const endHour = document.getElementById("endHour");
+
+  for (let hour = 5; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    startHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+
+  for (let hour = 1; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    endHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+
+  startHour.value = 22;
+  endHour.value = 5;
 }
 function fillDaySelectors() {
   const fromDay = document.getElementById("fromDay");
@@ -279,6 +273,7 @@ function buildDates() {
   };
 }
 fillDaySelectors();
+fillHourSelectors();
 </script>
 
 </body>
