@@ -239,16 +239,22 @@ textarea {
   function generateSMS() {
   const reason = document.getElementById("reason").value;
 
-  const text =
+const mode = localStorage.getItem("tachatzMode") || "alert";
+
+const secondLine = mode === "alert"
+  ? "תבוטל בין"
+  : "מבוטלת זמנית";
+
+const text =
 `עקב ${reason}
 תחנה זו
-מבוטלת זמנית
+${secondLine}
 לפרטים 8787*`;
 
-  const leftText =
+const leftText =
 `עקב ${reason}
 תחנה זו
-מבוטלת זמנית
+${secondLine}
 *לפרטים 8787`;
 
   document.getElementById("smsText").value = text;
