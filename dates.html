@@ -105,6 +105,24 @@
 .clear-btn:hover {
   background: #4b5563;
 }
+
+    .mode-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 0 18px;
+}
+
+.mode-btn {
+  background: #e5e7eb;
+  color: #111;
+  min-width: 100px;
+}
+
+.mode-btn.active {
+  background: #1976d2;
+  color: white;
+}
   </style>
 </head>
 
@@ -113,6 +131,12 @@
 <div class="container">
   <h2>שעות הופעת ההודעה</h2>
 
+<div class="mode-row">
+  <button id="alertModeBtn" class="mode-btn active" onclick="setMode('alert')">התראה</button>
+  <button id="durationModeBtn" class="mode-btn" onclick="setMode('duration')">משך</button>
+</div>
+
+  
   <div class="row">
 
   <div class="field">
@@ -289,6 +313,24 @@ function buildDates() {
   document.getElementById("startHour").value = 22;
   document.getElementById("endHour").value = 5;
 }
+
+  let currentMode = "alert";
+
+function setMode(mode) {
+  currentMode = mode;
+
+  document.getElementById("alertModeBtn").classList.remove("active");
+  document.getElementById("durationModeBtn").classList.remove("active");
+
+  if (mode === "alert") {
+    document.getElementById("alertModeBtn").classList.add("active");
+  }
+
+  if (mode === "duration") {
+    document.getElementById("durationModeBtn").classList.add("active");
+  }
+}
+  
 fillDaySelectors();
 fillHourSelectors();
 </script>
