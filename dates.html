@@ -160,7 +160,7 @@
 </div>
 
   
-  <div class="row">
+  <div class="row" id="dateRow">
 
   <div class="field">
     <label>יום בחודש</label>
@@ -482,7 +482,7 @@ saveTachatzSettings();
 
   if (type === "immediate") {
     document.getElementById("immediateEventBtn").classList.add("active");
-
+document.getElementById("dateRow").style.display = "none";
     document.getElementById("alertModeBtn").style.visibility = "hidden";
 
     setMode("duration");
@@ -491,7 +491,7 @@ saveTachatzSettings();
 
   if (type === "future") {
     document.getElementById("futureEventBtn").classList.add("active");
-
+document.getElementById("dateRow").style.display = "flex";
     document.getElementById("alertModeBtn").style.visibility = "visible";
 
     restoreStartHourOptions();
