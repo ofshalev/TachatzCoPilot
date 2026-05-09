@@ -472,10 +472,19 @@ saveTachatzSettings();
 
   if (type === "immediate") {
     document.getElementById("immediateEventBtn").classList.add("active");
+
+    // In real-time mode, there is no alert phase
+    document.getElementById("alertModeBtn").style.display = "none";
+
+    // Force duration mode
+    setMode("duration");
   }
 
   if (type === "future") {
     document.getElementById("futureEventBtn").classList.add("active");
+
+    // In future mode, show both duration and alert
+    document.getElementById("alertModeBtn").style.display = "inline-block";
   }
 }
 
@@ -488,7 +497,7 @@ document.getElementById("endHour").value = 5;
 saveDurationHours();
 saveTachatzSettings();
 
-  localStorage.setItem("tachatzEventType", currentEventType);
+  setEventType(currentEventType);
 </script>
 </body>
 </html>
