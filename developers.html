@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>מחולל הודעת ביטול תחנה</title>
+  <title>מחולל הודעה למפתחים</title>
 
   <style>
     body {
@@ -143,7 +143,7 @@ textarea {
 .message-box,
 .left-message-box {
   flex: 0 0 200px;
-
+}
 .message-box textarea,
 .left-message-box textarea {
   width: 100%;
@@ -210,13 +210,32 @@ textarea {
 .temporary-check input {
   width: auto;
 }
+  .developers-message-box {
+  flex: 1;
+  min-width: 520px;
+}
+
+#developersText {
+  width: 100%;
+  height: 230px;
+  box-sizing: border-box;
+  resize: none;
+  line-height: 1.7;
+  direction: rtl;
+  text-align: right;
+  font-size: 20px;
+}
+
+.developers-message-box .copy-btn {
+  width: 100%;
+}
   </style>
 </head>
 
 <body>
 
   <div class="container">
-    <h2>הודעת ביטול תחנה</h2>
+    <h2>הודעה למפתחים</h2>
 
 <div class="boxes-row">
 
@@ -240,20 +259,12 @@ textarea {
 </label>
   </div>
 
-  <div class="box-section message-box">
-    <label>הודעה מוכנה</label>
-    <textarea id="smsText" readonly></textarea>
+  <div class="box-section developers-message-box">
+  <label>הודעה למפתחים</label>
+  <textarea id="developersText" readonly></textarea>
 
-    <button class="copy-btn" onclick="copySMS()">העתק הודעה</button>
-  </div>
-
-  <div class="box-section left-message-box">
-  <label>הודעה מיושרת לשמאל</label>
-  <textarea id="smsTextLeft" readonly></textarea>
-
-  <button class="copy-btn" onclick="copyLeftSMS()">העתק הודעה</button>
+  <button class="copy-btn" onclick="copyDevelopersMessage()">העתק הודעה</button>
 </div>
-
 </div>
 
   </div>
@@ -362,10 +373,37 @@ ${thirdLine}
 *לפרטים 8787`;
   }
 
-  document.getElementById("smsText").value = text;
-  document.getElementById("smsTextLeft").value = leftText;
+  document.getElementById("developersText").value = buildDevelopersMessage();
 }
 
+
+  
+function buildDevelopersMessage() {
+  const reason = document.getElementById("reason").value;
+
+  const mode = localStorage.getItem("tachatzMode") || "duration";
+
+  const durationStartTime = localStorage.getItem("tachatzDurationStartTime") || "22:00";
+  const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
+
+  const isTemporary = document.getElementById("temporaryCancel").checked;
+  const isDisruption = document.getElementById("disruptionMode").checked;
+
+  if (isDisruption) {
+    return `בעקבות ${reason}, צפויים שיבושים בקווי השירות.`;
+  }
+
+  let timeText = "";
+
+  if (isTemporary) {
+    timeText = "זמנית";
+  } else {
+    timeText = `מ-${durationStartTime} עד ${durationEndTime}`;
+  }
+
+  return `בעקבות ${reason}, התחנה/ות הבאה/ות מבוטלת/ות ${timeText}.`;
+}
+  
 async function copySMS() {
   generateSMS();
 
@@ -386,6 +424,26 @@ async function copySMS() {
   }
 }
 
+async function copyDevelopersMessage() {
+  generateSMS();
+
+  const developersText = document.getElementById("developersText").value;
+
+  try {
+    await navigator.clipboard.writeText(developersText);
+
+    const btn = document.querySelector(".developers-message-box .copy-btn");
+    btn.classList.add("copied");
+
+    setTimeout(() => {
+      btn.classList.remove("copied");
+    }, 200);
+
+  } catch (err) {
+    alert("לא ניתן היה להעתיק את ההודעה");
+  }
+}
+  
 async function copyLeftSMS() {
   generateSMS();
 
