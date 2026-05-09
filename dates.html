@@ -553,8 +553,8 @@ function clearResults() {
     // Restore real-time defaults
     document.getElementById("startHour").innerHTML = `<option value="now">עכשיו</option>`;
     document.getElementById("startHour").value = "now";
-    document.getElementById("endHour").value = "serviceEnd";
-
+    document.getElementById("endHour").value = "plusTwoHours";
+    
     saveDurationHours();
     saveTachatzSettings();
     return;
