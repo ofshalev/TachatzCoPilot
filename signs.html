@@ -258,6 +258,17 @@ textarea {
 
   </div>
 <script>
+function applyEventTypeDefaults() {
+  const eventType = localStorage.getItem("tachatzEventType") || "immediate";
+  const temporaryCheckbox = document.getElementById("temporaryCancel");
+
+  if (eventType === "immediate") {
+    temporaryCheckbox.checked = true;
+  }
+
+  generateSMS();
+}
+  
 function generateSMS() {
   const reason = document.getElementById("reason").value;
 
@@ -392,6 +403,11 @@ async function copyLeftSMS() {
 }
 
 window.addEventListener("storage", function(event) {
+  if (event.key === "tachatzEventType") {
+    applyEventTypeDefaults();
+    return;
+  }
+
   if (
     event.key === "tachatzMode" ||
     event.key === "tachatzStartTime" ||
@@ -403,5 +419,5 @@ window.addEventListener("storage", function(event) {
   }
 });
 
-generateSMS();
+applyEventTypeDefaults();
 </script>
