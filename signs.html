@@ -236,12 +236,14 @@ textarea {
 
   </div>
 <script>
-  function generateSMS() {
+ function generateSMS() {
   const reason = document.getElementById("reason").value;
 
   const mode = localStorage.getItem("tachatzMode") || "alert";
-  const startTime = localStorage.getItem("tachatzStartTime") || "18:00";
-  const endTime = localStorage.getItem("tachatzEndTime") || "21:59";
+
+  // These are the REAL cancellation hours from "משך"
+  const durationStartTime = localStorage.getItem("tachatzDurationStartTime") || "22:00";
+  const durationEndTime = localStorage.getItem("tachatzDurationEndTime") || "05:00";
 
   let text;
   let leftText;
@@ -250,13 +252,13 @@ textarea {
     text =
 `עקב ${reason}
 תחנה זו תבוטל
-בין ${startTime} - ${endTime}
+בין ${durationStartTime} - ${durationEndTime}
 לפרטים 8787*`;
 
     leftText =
 `עקב ${reason}
 תחנה זו תבוטל
-בין ${startTime} - ${endTime}
+בין ${durationStartTime} - ${durationEndTime}
 *לפרטים 8787`;
   } else {
     text =
