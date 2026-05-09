@@ -239,28 +239,42 @@ textarea {
   function generateSMS() {
   const reason = document.getElementById("reason").value;
 
-const mode = localStorage.getItem("tachatzMode") || "alert";
+  const mode = localStorage.getItem("tachatzMode") || "alert";
+  const startTime = localStorage.getItem("tachatzStartTime") || "18:00";
+  const endTime = localStorage.getItem("tachatzEndTime") || "21:59";
 
-const secondLine = mode === "alert"
-  ? "תבוטל בין"
-  : "מבוטלת עד";
+  let text;
+  let leftText;
 
-const text =
+  if (mode === "alert") {
+    text =
 `עקב ${reason}
-תחנה זו
-${secondLine}
+תחנה זו תבוטל
+בין ${startTime} - ${endTime}
 לפרטים 8787*`;
 
-const leftText =
+    leftText =
+`עקב ${reason}
+תחנה זו תבוטל
+בין ${startTime} - ${endTime}
+*לפרטים 8787`;
+  } else {
+    text =
 `עקב ${reason}
 תחנה זו
-${secondLine}
+מבוטלת עד
+לפרטים 8787*`;
+
+    leftText =
+`עקב ${reason}
+תחנה זו
+מבוטלת עד
 *לפרטים 8787`;
+  }
 
   document.getElementById("smsText").value = text;
   document.getElementById("smsTextLeft").value = leftText;
 }
-
   async function copySMS() {
     generateSMS();
 
@@ -302,10 +316,14 @@ ${secondLine}
   }
 
  window.addEventListener("storage", function(event) {
-    if (event.key === "tachatzMode") {
-      generateSMS();
-    }
-  });
+  if (
+    event.key === "tachatzMode" ||
+    event.key === "tachatzStartTime" ||
+    event.key === "tachatzEndTime"
+  ) {
+    generateSMS();
+  }
+});
 
   
   generateSMS();
