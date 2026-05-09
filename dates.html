@@ -152,11 +152,13 @@
   <button id="immediateEventBtn" class="event-type-btn active" onclick="setEventType('immediate')">זמן אמת</button>
   <button id="futureEventBtn" class="event-type-btn" onclick="setEventType('future')">עתידי</button>
 </div>
+ <div id="modeSection">
   <h2>זמני האירוע</h2>
 
-<div class="mode-row">
-  <button id="durationModeBtn" class="mode-btn active" onclick="setMode('duration')">משך</button>
-  <button id="alertModeBtn" class="mode-btn" onclick="setMode('alert')">התראה</button>
+  <div class="mode-row">
+    <button id="durationModeBtn" class="mode-btn active" onclick="setMode('duration')">משך</button>
+    <button id="alertModeBtn" class="mode-btn" onclick="setMode('alert')">התראה</button>
+  </div>
 </div>
 
   
@@ -547,8 +549,9 @@ function clearResults() {
   document.getElementById("futureEventBtn").classList.remove("active");
 
   if (type === "immediate") {
+    document.getElementById("modeSection").style.display = "none";
     document.getElementById("immediateEventBtn").classList.add("active");
-document.getElementById("dateRow").style.display = "none";
+    document.getElementById("dateRow").style.display = "none";
     document.getElementById("alertModeBtn").style.visibility = "hidden";
 
     setMode("duration");
@@ -556,8 +559,9 @@ document.getElementById("dateRow").style.display = "none";
   }
 
   if (type === "future") {
+    document.getElementById("modeSection").style.display = "block";
     document.getElementById("futureEventBtn").classList.add("active");
-document.getElementById("dateRow").style.display = "flex";
+    document.getElementById("dateRow").style.display = "flex";
     document.getElementById("alertModeBtn").style.visibility = "visible";
 
     restoreStartHourOptions();
