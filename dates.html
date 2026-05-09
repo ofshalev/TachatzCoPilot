@@ -174,6 +174,8 @@
 </div>
 
 <script>
+let currentMode = "alert";
+
 function formatDate(date) {
   const d = String(date.getDate()).padStart(2, "0");
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -193,18 +195,122 @@ function buildTime(hour, minute = 0) {
 
 function getDisplayEndTime(endHour) {
   if (currentMode === "alert") {
-    const reducedHour = endHour - 1;
-
-    if (endHour === 0) {
-      return "23:59";
-    }
-
-    return `${String(reducedHour).padStart(2, "0")}:59`;
+    return `${String(endHour - 1).padStart(2, "0")}:59`;
   }
 
   return buildTime(endHour, 0);
 }
-  
+
+function fillDaySelectors() {
+  const fromDay = document.getElementById("fromDay");
+  const toDay = document.getElementById("toDay");
+
+  fromDay.innerHTML = "";
+  toDay.innerHTML = "";
+
+  for (let day = 1; day <= 31; day++) {
+    fromDay.innerHTML += `<option value="${day}">${day}</option>`;
+    toDay.innerHTML += `<option value="${day}">${day}</option>`;
+  }
+
+  fromDay.value = 1;
+  toDay.value = 1;
+}
+
+function fillHourSelectors() {
+  const startHour = document.getElementById("startHour");
+  const endHour = document.getElementById("endHour");
+
+  startHour.innerHTML = "";
+  endHour.innerHTML = "";
+
+  for (let hour = 5; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    startHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+
+  for (let hour = 1; hour <= 23; hour++) {
+    const value = String(hour).padStart(2, "0");
+    endHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
+  }
+
+  startHour.value = 18;
+  endHour.value = 22;
+}
+
+function buildDates() {
+  const YEAR = 2026;
+  const CURRENT_MONTH = 5;
+
+  const fromDay = Number(document.getElementById("fromDay").value);
+  const toDay = Number(document.getElementById("toDay").value);
+
+  const startDate = new Date(YEAR, CURRENT_MONTH - 1, fromDay);
+
+  let endMonth = CURRENT_MONTH;
+
+  if (toDay < fromDay) {
+    endMonth++;
+  }
+
+  const endDate = new Date(YEAR, endMonth - 1, toDay);
+
+  return {
+    startDate,
+    endDate
+  };
+}
+
+function saveTachatzSettings() {
+  const startHour = Number(document.getElementById("startHour").value);
+  const endHour = Number(document.getElementById("endHour").value);
+
+  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const endTime = getDisplayEndTime(endHour);
+
+  localStorage.setItem("tachatzMode", currentMode);
+  localStorage.setItem("tachatzStartTime", startTime);
+  localStorage.setItem("tachatzEndTime", endTime);
+}
+
+function saveDurationHours() {
+  const startHour = Number(document.getElementById("startHour").value);
+  const endHour = Number(document.getElementById("endHour").value);
+
+  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const endTime = `${String(endHour).padStart(2, "0")}:00`;
+
+  localStorage.setItem("tachatzDurationStartTime", startTime);
+  localStorage.setItem("tachatzDurationEndTime", endTime);
+}
+
+function setMode(mode) {
+  currentMode = mode;
+
+  localStorage.setItem("tachatzMode", mode);
+
+  document.getElementById("alertModeBtn").classList.remove("active");
+  document.getElementById("durationModeBtn").classList.remove("active");
+
+  if (mode === "alert") {
+    document.getElementById("alertModeBtn").classList.add("active");
+
+    document.getElementById("startHour").value = 18;
+    document.getElementById("endHour").value = 22;
+  }
+
+  if (mode === "duration") {
+    document.getElementById("durationModeBtn").classList.add("active");
+
+    document.getElementById("startHour").value = 22;
+    document.getElementById("endHour").value = 5;
+
+    saveDurationHours();
+  }
+
+  saveTachatzSettings();
+}
+
 function generate() {
   const startHour = Number(document.getElementById("startHour").value);
   const endHour = Number(document.getElementById("endHour").value);
@@ -268,117 +374,11 @@ function generate() {
 
   result.innerHTML = lines.join("");
 }
-  
-  let current = new Date(startDate);
-  let lines = [];
 
-  const startTime = `${String(startHour).padStart(2, "0")}:00`;
-  const endTime = getDisplayEndTime(endHour);
-
-  while (current <= endDate) {
-    let finishDate = new Date(current);
-
-    // If the ending hour is smaller than the starting hour,
-    // the ending date is the next day.
-    if (endHour < startHour) {
-      finishDate = addDays(current, 1);
-    }
-
-    lines.push(`
-      <div class="result-row">
-
-        <div class="result-cell">
-          ${formatDate(current)}
-        </div>
-
-        <div class="result-cell">
-          ${startTime}
-        </div>
-
-        <button class="copy-small"
-          onclick="copySingle('${formatDate(current)} ${startTime}')">
-          העתק
-        </button>
-
-        <div class="result-cell">
-          ${formatDate(finishDate)}
-        </div>
-
-        <div class="result-cell">
-          ${endTime}
-        </div>
-
-        <button class="copy-small"
-          onclick="copySingle('${formatDate(finishDate)} ${endTime}')">
-          העתק
-        </button>
-
-      </div>
-    `);
-
-    current = addDays(current, 1);
-  }
-
-  result.innerHTML = lines.join("");
-}
 function copySingle(text) {
   navigator.clipboard.writeText(text);
 }
 
-function copyText() {
-  const text = document.getElementById("result");
-  text.select();
-  document.execCommand("copy");
-}
-  function fillHourSelectors() {
-  const startHour = document.getElementById("startHour");
-  const endHour = document.getElementById("endHour");
-
-  for (let hour = 5; hour <= 23; hour++) {
-    const value = String(hour).padStart(2, "0");
-    startHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
-  }
-
-  for (let hour = 1; hour <= 23; hour++) {
-    const value = String(hour).padStart(2, "0");
-    endHour.innerHTML += `<option value="${hour}">${value}:00</option>`;
-  }
-
-  startHour.value = 18;
-endHour.value = 22;
-}
-function fillDaySelectors() {
-  const fromDay = document.getElementById("fromDay");
-  const toDay = document.getElementById("toDay");
-
-  for (let day = 1; day <= 31; day++) {
-    fromDay.innerHTML += `<option value="${day}">${day}</option>`;
-    toDay.innerHTML += `<option value="${day}">${day}</option>`;
-  }
-}
-function buildDates() {
-
-  const YEAR = 2026;
-  const CURRENT_MONTH = 5;
-
-  const fromDay = Number(document.getElementById("fromDay").value);
-  const toDay = Number(document.getElementById("toDay").value);
-
-  const startDate = new Date(YEAR, CURRENT_MONTH - 1, fromDay);
-
-  let endMonth = CURRENT_MONTH;
-
-  if (toDay < fromDay) {
-    endMonth++;
-  }
-
-  const endDate = new Date(YEAR, endMonth - 1, toDay);
-
-  return {
-    startDate,
-    endDate
-  };
-}
 function clearResults() {
   document.getElementById("result").innerHTML = "";
 
@@ -393,63 +393,12 @@ function clearResults() {
   if (currentMode === "duration") {
     document.getElementById("startHour").value = 22;
     document.getElementById("endHour").value = 5;
-  }
-}
-
-  let currentMode = "alert";
-
-function setMode(mode) {
-  currentMode = mode;
-  localStorage.setItem("tachatzMode", mode);
-
-  document.getElementById("alertModeBtn").classList.remove("active");
-  document.getElementById("durationModeBtn").classList.remove("active");
-
-  if (mode === "alert") {
-    document.getElementById("alertModeBtn").classList.add("active");
-
-    // Default for התראה
-    document.getElementById("startHour").value = 18;
-    document.getElementById("endHour").value = 22;
-  }
-
-  if (mode === "duration") {
-    document.getElementById("durationModeBtn").classList.add("active");
-
-    // Default for משך
-    document.getElementById("startHour").value = 22;
-    document.getElementById("endHour").value = 5;
-
-    // Save the real cancellation hours for the sign message
     saveDurationHours();
   }
 
   saveTachatzSettings();
 }
 
-function saveTachatzSettings() {
-  const startHour = Number(document.getElementById("startHour").value);
-  const endHour = Number(document.getElementById("endHour").value);
-
-  const startTime = `${String(startHour).padStart(2, "0")}:00`;
-  const endTime = getDisplayEndTime(endHour);
-
-  localStorage.setItem("tachatzMode", currentMode);
-  localStorage.setItem("tachatzStartTime", startTime);
-  localStorage.setItem("tachatzEndTime", endTime);
-}
-
-function saveDurationHours() {
-  const startHour = Number(document.getElementById("startHour").value);
-  const endHour = Number(document.getElementById("endHour").value);
-
-  const startTime = `${String(startHour).padStart(2, "0")}:00`;
-  const endTime = `${String(endHour).padStart(2, "0")}:00`;
-
-  localStorage.setItem("tachatzDurationStartTime", startTime);
-  localStorage.setItem("tachatzDurationEndTime", endTime);
-}
-  
 fillDaySelectors();
 fillHourSelectors();
 
@@ -458,6 +407,5 @@ localStorage.setItem("tachatzDurationEndTime", "05:00");
 
 saveTachatzSettings();
 </script>
-
 </body>
 </html>
