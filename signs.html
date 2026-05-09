@@ -266,6 +266,10 @@ function applyEventTypeDefaults() {
     temporaryCheckbox.checked = true;
   }
 
+  if (eventType === "future") {
+    temporaryCheckbox.checked = false;
+  }
+
   generateSMS();
 }
   
