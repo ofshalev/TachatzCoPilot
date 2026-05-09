@@ -471,14 +471,17 @@ saveTachatzSettings();
   document.getElementById("futureEventBtn").classList.remove("active");
 
   if (type === "immediate") {
-    document.getElementById("immediateEventBtn").classList.add("active");
+  document.getElementById("immediateEventBtn").classList.add("active");
 
-    // In real-time mode, there is no alert phase
-    document.getElementById("alertModeBtn").style.visibility = "hidden";
+  // Hide התראה but keep its space
+  document.getElementById("alertModeBtn").style.visibility = "hidden";
 
-    // Force duration mode
-    setMode("duration");
-  }
+  // Force משך mode
+  setMode("duration");
+
+  // זמן אמת default: now until two hours from now
+  setRealTimeDefaults();
+}
 
   if (type === "future") {
     document.getElementById("futureEventBtn").classList.add("active");
@@ -488,6 +491,24 @@ saveTachatzSettings();
   }
 }
 
+function setRealTimeDefaults() {
+  const now = new Date();
+  const end = new Date(now);
+  end.setHours(end.getHours() + 2);
+
+  const startHour = now.getHours();
+  const endHour = end.getHours();
+
+  document.getElementById("startDay").value = now.getDate();
+  document.getElementById("dayCount").value = 1;
+
+  document.getElementById("startHour").value = startHour;
+  document.getElementById("endHour").value = endHour;
+
+  saveDurationHours();
+  saveTachatzSettings();
+}
+  
 fillDaySelectors();
 fillHourSelectors();
 
