@@ -212,6 +212,8 @@ function generate() {
 
   const { startDate, endDate } = buildDates();
 
+saveTachatzSettings();
+  
   let current = new Date(startDate);
   let lines = [];
 
@@ -362,11 +364,24 @@ function setMode(mode) {
     document.getElementById("startHour").value = 22;
     document.getElementById("endHour").value = 5;
   }
+  saveTachatzSettings();
+}
+
+function saveTachatzSettings() {
+  const startHour = Number(document.getElementById("startHour").value);
+  const endHour = Number(document.getElementById("endHour").value);
+
+  const startTime = `${String(startHour).padStart(2, "0")}:00`;
+  const endTime = getDisplayEndTime(endHour);
+
+  localStorage.setItem("tachatzMode", currentMode);
+  localStorage.setItem("tachatzStartTime", startTime);
+  localStorage.setItem("tachatzEndTime", endTime);
 }
   
 fillDaySelectors();
 fillHourSelectors();
-localStorage.setItem("tachatzMode", currentMode);
+saveTachatzSettings();
 </script>
 
 </body>
