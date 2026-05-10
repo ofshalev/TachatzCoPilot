@@ -140,11 +140,35 @@
   background: #1976d2;
   color: white;
 }
-#result {
-  max-height: 360px;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 25px;
+  direction: rtl;
+}
+
+.container {
+  height: calc(100vh - 50px);
+  max-height: calc(100vh - 50px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.results {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding-left: 6px;
+  padding-bottom: 20px;
 }
   </style>
 </head>
