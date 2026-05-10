@@ -126,17 +126,25 @@
   <script>
     
 
-    function setTodayAsDefaultEventDay() {
-      const startDayInput = document.getElementById("eventStartDay");
-      if (!startDayInput) return;
+  function setTodayAsDefaultEventDay() {
+  const startDayInput = document.getElementById("eventStartDay");
+  const endDayInput = document.getElementById("eventEndDay");
 
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
+  if (!startDayInput) return;
 
-      startDayInput.value = `${yyyy}-${mm}-${dd}`;
-    }
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+
+  startDayInput.value = `${yyyy}-${mm}-${dd}`;
+
+  // End day stays empty by default
+  if (endDayInput) {
+    endDayInput.value = "";
+  }
+}
+    
 function formatSingleDate(dateValue) {
   if (!dateValue) return "";
 
