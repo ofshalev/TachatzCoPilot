@@ -76,6 +76,22 @@
     .copy-btn:active {
       transform: translateY(1px);
     }
+
+    .clear-btn {
+  margin-top: 10px;
+  margin-right: 8px;
+  padding: 9px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #777;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.clear-btn:active {
+  transform: translateY(1px);
+}
   </style>
 </head>
 
@@ -121,6 +137,7 @@
     <textarea id="eventTitleResult" readonly></textarea>
 
     <button type="button" class="copy-btn" onclick="copyEventTitle()">העתק כותרת</button>
+    <button type="button" class="clear-btn" onclick="clearEventTitleFields()">נקה הכל</button>
   </div>
 
   <script>
@@ -213,6 +230,19 @@ function buildEventTitle() {
   navigator.clipboard.writeText(textBox.value);
 }
 
+function clearEventTitleFields() {
+  document.getElementById("eventCity").value = "";
+  document.getElementById("eventStreet").value = "";
+
+  document.getElementById("eventReason").selectedIndex = 0;
+
+  setTodayAsDefaultEventDay();
+
+  document.getElementById("eventEndDay").value = "";
+
+  buildEventTitle();
+}
+    
     window.onload = function () {
   setTodayAsDefaultEventDay();
   buildEventTitle();
