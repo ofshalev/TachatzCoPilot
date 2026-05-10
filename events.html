@@ -1,1 +1,189 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>פתיחת אירוע</title>
 
+  <style>
+    body {
+      margin: 0;
+      padding: 22px;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      direction: rtl;
+    }
+
+    .event-title-box {
+      background: white;
+      padding: 18px;
+      border-radius: 18px;
+      max-width: 1100px;
+      margin: 0 auto;
+      direction: rtl;
+    }
+
+    .event-title-box h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      text-align: right;
+    }
+
+    .event-title-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field label,
+    .result-label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select,
+    #eventTitleResult {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+      direction: rtl;
+    }
+
+    #eventTitleResult {
+      margin-top: 8px;
+      resize: none;
+      direction: rtl;
+      height: 60px;
+    }
+
+    .copy-btn {
+      margin-top: 10px;
+      padding: 9px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #2f5bea;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .copy-btn:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="event-title-box">
+    <h3>כותרת אירוע</h3>
+
+    <div class="event-title-grid">
+
+      <div class="field">
+        <label>עיר</label>
+        <input type="text" id="eventCity" placeholder="לדוגמה: פתח תקווה" oninput="buildEventTitle()">
+      </div>
+
+      <div class="field">
+        <label>סיבה</label>
+        <select id="eventReason" onchange="buildEventTitle()">
+          <option value="תאונת דרכים">תאונת דרכים</option>
+          <option value="רכב תקוע">רכב תקוע</option>
+          <option value="עבודות">עבודות</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>רחוב / כביש / דרך</label>
+        <input type="text" id="eventStreet" placeholder="לדוגמה: ז'בוטינסקי" oninput="buildEventTitle()">
+      </div>
+
+      <div class="field">
+        <label>יום</label>
+        <input type="date" id="eventStartDay" onchange="buildEventTitle()">
+      </div>
+
+      <div class="field">
+        <label>יום סיום</label>
+        <input type="date" id="eventEndDay" onchange="buildEventTitle()">
+      </div>
+
+    </div>
+
+    <label class="result-label">כותרת שנוצרה</label>
+    <textarea id="eventTitleResult" readonly></textarea>
+
+    <button type="button" class="copy-btn" onclick="copyEventTitle()">העתק כותרת</button>
+  </div>
+
+  <script>
+    function formatHebrewDate(dateValue) {
+      if (!dateValue) return "";
+
+      const parts = dateValue.split("-");
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+
+      return `${day}/${month}/${year}`;
+    }
+
+    function setTodayAsDefaultEventDay() {
+      const startDayInput = document.getElementById("eventStartDay");
+      if (!startDayInput) return;
+
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+
+      startDayInput.value = `${yyyy}-${mm}-${dd}`;
+    }
+
+    function buildEventTitle() {
+      const city = document.getElementById("eventCity").value.trim();
+      const reason = document.getElementById("eventReason").value;
+      const street = document.getElementById("eventStreet").value.trim();
+      const startDay = document.getElementById("eventStartDay").value;
+      const endDay = document.getElementById("eventEndDay").value;
+
+      const startText = formatHebrewDate(startDay);
+      const endText = formatHebrewDate(endDay);
+
+      let datePart = startText;
+
+      if (endText) {
+        datePart = `מ-${startText} עד ${endText}`;
+      }
+
+      const parts = [];
+
+      if (city) parts.push(city);
+      if (reason) parts.push(reason);
+      if (street) parts.push(street);
+      if (datePart) parts.push(datePart);
+
+      document.getElementById("eventTitleResult").value = parts.join(" | ");
+    }
+
+    function copyEventTitle() {
+      const textBox = document.getElementById("eventTitleResult");
+      textBox.select();
+      document.execCommand("copy");
+    }
+
+    window.addEventListener("DOMContentLoaded", function () {
+      setTodayAsDefaultEventDay();
+      buildEventTitle();
+    });
+  </script>
+
+</body>
+</html>
