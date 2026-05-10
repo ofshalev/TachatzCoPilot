@@ -630,23 +630,28 @@ function clearResults() {
     document.getElementById("modeSection").style.display = "none";
     document.getElementById("immediateEventBtn").classList.add("active");
     document.getElementById("dateRow").style.display = "none";
-    document.getElementById("alertModeBtn").style.visibility = "hidden";
+
+    const alertBtn = document.getElementById("alertBtn")
+    if (alertBtn) alertBtn.style.visibility = "hidden";
 
     setMode("duration");
     setRealTimeDefaults();
   }
 
   if (type === "future") {
-    document.getElementById("modeSection").style.display = "block";
+    document.getElementById("modeSection").style.display = "none";
     document.getElementById("futureEventBtn").classList.add("active");
     document.getElementById("dateRow").style.display = "flex";
-    document.getElementById("alertModeBtn").style.visibility = "visible";
+
+    const alertBtn = document.getElementById("alertBtn")
+    if (alertBtn) alertBtn.style.visibility = "hidden";
 
     restoreStartHourOptions();
     setMode("duration");
   }
-}
-  
+
+  generate();
+}  
 function restoreStartHourOptions() {
   const startHour = document.getElementById("startHour");
 
