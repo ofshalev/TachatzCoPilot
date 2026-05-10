@@ -272,18 +272,19 @@
   font-size: 12px;
 }
 
-.tool-frame {
+..tool-frame {
   width: 100%;
-  height: 820px;  /* try 780 / 800 / 820 */
+  height: 820px;
   border: none;
   border-radius: 16px;
   background: white;
+  overflow: auto;
 }
 
-    html,
+html,
 body {
-    height: 100%;
-    overflow: hidden;
+  min-height: 100%;
+  overflow-y: auto;
 }
     .signage-grid {
   display: grid;
