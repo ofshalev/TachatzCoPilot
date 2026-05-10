@@ -92,6 +92,50 @@
 .clear-btn:active {
   transform: translateY(1px);
 }
+    .section-divider {
+  margin: 22px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+.event-description-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.verify-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.verify-options label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 0;
+}
+
+.verify-options input {
+  width: auto;
+}
+
+#eventDescriptionResult {
+  margin-top: 8px;
+  resize: none;
+  direction: rtl;
+  height: 85px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+}
   </style>
 </head>
 
@@ -138,6 +182,42 @@
 
     <button type="button" class="copy-btn" onclick="copyEventTitle()">העתק כותרת</button>
     <button type="button" class="clear-btn" onclick="clearEventTitleFields()">נקה הכל</button>
+    <hr class="section-divider">
+
+<h3>תיאור האירוע</h3>
+
+<div class="event-description-grid">
+
+  <div class="field">
+    <label>מפעיל</label>
+    <select id="eventOperator" onchange="buildEventDescription()">
+      <option value="אגד">אגד</option>
+      <option value="אפיקים">אפיקים</option>
+      <option value="דן">דן</option>
+      <option value="מטרופולין">מטרופולין</option>
+      <option value="סופרבוס">סופרבוס</option>
+      <option value="קווים">קווים</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>אימות</label>
+
+    <div class="verify-options">
+      <label><input type="checkbox" value="תמונות" onchange="buildEventDescription()"> תמונות</label>
+      <label><input type="checkbox" value="ווייז" onchange="buildEventDescription()"> ווייז</label>
+      <label><input type="checkbox" value="מצלמות" onchange="buildEventDescription()"> מצלמות</label>
+      <label><input type="checkbox" value="מוקד עירוני" onchange="buildEventDescription()"> מוקד עירוני</label>
+      <label><input type="checkbox" value="נתיבי ישראל" onchange="buildEventDescription()"> נתיבי ישראל</label>
+    </div>
+  </div>
+
+</div>
+
+<label class="result-label">תיאור שנוצר</label>
+<textarea id="eventDescriptionResult" readonly></textarea>
+
+<button type="button" class="copy-btn" onclick="copyEventDescription()">העתק תיאור</button>
   </div>
 
   <script>
@@ -222,6 +302,7 @@ function buildEventTitle() {
   if (datePart) parts.push(datePart);
 
   document.getElementById("eventTitleResult").value = parts.join(", ");
+  buildEventDescription();
 }
     function copyEventTitle() {
   const textBox = document.getElementById("eventTitleResult");
@@ -242,10 +323,83 @@ function clearEventTitleFields() {
 
   buildEventTitle();
 }
+
+function getSelectedVerifications() {
+  const checked = document.querySelectorAll(".verify-options input[type='checkbox']:checked");
+  return Array.from(checked).map(cb => cb.value);
+}
+
+function formatVerificationText(items) {
+  if (items.length === 0) return "";
+
+  const withBet = items.map(item => {
+    if (item === "ווייז") return "בווייז";
+    if (item === "מוקד עירוני") return "במוקד עירוני";
+    if (item === "נתיבי ישראל") return "בנתיבי ישראל";
+    return "ב" + item;
+  });
+
+  if (withBet.length === 1) {
+    return withBet[0];
+  }
+
+  if (withBet.length === 2) {
+    return withBet[0] + " ו" + withBet[1];
+  }
+
+  return withBet.slice(0, -1).join(", ") + " ו" + withBet[withBet.length - 1];
+}
+
+function buildEventDescription() {
+  const operator = document.getElementById("eventOperator")?.value || "";
+  const reason = document.getElementById("eventReason")?.value || "";
+  const street = document.getElementById("eventStreet")?.value.trim() || "";
+  const city = document.getElementById("eventCity")?.value.trim() || "";
+  const resultBox = document.getElementById("eventDescriptionResult");
+
+  if (!resultBox) return;
+
+  let text = "";
+
+  if (operator || reason || street || city) {
+    text = `התקבל דיווח ממפעיל ${operator}`;
+
+    if (reason) {
+      text += ` על ${reason}`;
+    }
+
+    if (street) {
+      text += ` ברחוב ${street}`;
+    }
+
+    if (city) {
+      text += ` ב${city}`;
+    }
+
+    text += ".";
+  }
+
+  const verificationItems = getSelectedVerifications();
+  const verificationText = formatVerificationText(verificationItems);
+
+  if (verificationText) {
+    text += ` אומת ${verificationText}.`;
+  }
+
+  resultBox.value = text;
+}
+
+function copyEventDescription() {
+  const textBox = document.getElementById("eventDescriptionResult");
+  if (!textBox) return;
+
+  navigator.clipboard.writeText(textBox.value);
+}
     
-    window.onload = function () {
+window.onload = function () {
   setTodayAsDefaultEventDay();
   buildEventTitle();
+  buildEventDescription();
 };
   </script>
 
