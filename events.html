@@ -124,16 +124,7 @@
   </div>
 
   <script>
-    function formatHebrewDate(dateValue) {
-      if (!dateValue) return "";
-
-      const parts = dateValue.split("-");
-      const year = parts[0];
-      const month = parts[1];
-      const day = parts[2];
-
-      return `${day}/${month}/${year}`;
-    }
+    
 
     function setTodayAsDefaultEventDay() {
       const startDayInput = document.getElementById("eventStartDay");
@@ -146,33 +137,67 @@
 
       startDayInput.value = `${yyyy}-${mm}-${dd}`;
     }
+function formatSingleDate(dateValue) {
+  if (!dateValue) return "";
 
-    function buildEventTitle() {
-      const city = document.getElementById("eventCity").value.trim();
-      const reason = document.getElementById("eventReason").value;
-      const street = document.getElementById("eventStreet").value.trim();
-      const startDay = document.getElementById("eventStartDay").value;
-      const endDay = document.getElementById("eventEndDay").value;
+  const parts = dateValue.split("-");
+  const year = parts[0];
+  const month = parts[1];
+  const day = parts[2];
 
-      const startText = formatHebrewDate(startDay);
-      const endText = formatHebrewDate(endDay);
+  return `${day}.${month}.${year}`;
+}
 
-      let datePart = startText;
+function formatDateRange(startValue, endValue) {
+  if (!startValue) return "";
 
-      if (endText) {
-        datePart = `מ-${startText} עד ${endText}`;
-      }
+  if (!endValue) {
+    return formatSingleDate(startValue);
+  }
 
-      const parts = [];
+  const startParts = startValue.split("-");
+  const endParts = endValue.split("-");
 
-      if (city) parts.push(city);
-      if (reason) parts.push(reason);
-      if (street) parts.push(street);
-      if (datePart) parts.push(datePart);
+  const startYear = startParts[0];
+  const startMonth = startParts[1];
+  const startDay = startParts[2];
 
-      document.getElementById("eventTitleResult").value = parts.join(", ");
-    }
+  const endYear = endParts[0];
+  const endMonth = endParts[1];
+  const endDay = endParts[2];
 
+  // Same month and same year: 10-11.05.2026
+  if (startYear === endYear && startMonth === endMonth) {
+    return `${startDay}-${endDay}.${endMonth}.${endYear}`;
+  }
+
+  // Same year, different month: 30.05-02.06.2026
+  if (startYear === endYear) {
+    return `${startDay}.${startMonth}-${endDay}.${endMonth}.${endYear}`;
+  }
+
+  // Different years: 31.12.2026-01.01.2027
+  return `${startDay}.${startMonth}.${startYear}-${endDay}.${endMonth}.${endYear}`;
+}
+
+function buildEventTitle() {
+  const city = document.getElementById("eventCity").value.trim();
+  const reason = document.getElementById("eventReason").value;
+  const street = document.getElementById("eventStreet").value.trim();
+  const startDay = document.getElementById("eventStartDay").value;
+  const endDay = document.getElementById("eventEndDay").value;
+
+  const datePart = formatDateRange(startDay, endDay);
+
+  const parts = [];
+
+  if (city) parts.push(city);
+  if (reason) parts.push(reason);
+  if (street) parts.push(street);
+  if (datePart) parts.push(datePart);
+
+  document.getElementById("eventTitleResult").value = parts.join(" | ");
+}
     function copyEventTitle() {
   const textBox = document.getElementById("eventTitleResult");
   if (!textBox) return;
