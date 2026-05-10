@@ -212,6 +212,11 @@ function buildEventTitle() {
 
   navigator.clipboard.writeText(textBox.value);
 }
+
+    window.onload = function () {
+  setTodayAsDefaultEventDay();
+  buildEventTitle();
+};
   </script>
 
 </body>
