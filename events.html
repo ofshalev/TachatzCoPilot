@@ -174,15 +174,11 @@
     }
 
     function copyEventTitle() {
-      const textBox = document.getElementById("eventTitleResult");
-      textBox.select();
-      document.execCommand("copy");
-    }
+  const textBox = document.getElementById("eventTitleResult");
+  if (!textBox) return;
 
-    window.addEventListener("DOMContentLoaded", function () {
-      setTodayAsDefaultEventDay();
-      buildEventTitle();
-    });
+  navigator.clipboard.writeText(textBox.value);
+}
   </script>
 
 </body>
