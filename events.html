@@ -207,6 +207,53 @@
   min-height: 58px;
   box-sizing: border-box;
 }
+    /* Restore compact event title layout */
+.event-title-row {
+  max-width: 1120px !important;
+  margin: 0 auto !important;
+
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr !important;
+  gap: 12px !important;
+  align-items: end !important;
+  direction: rtl !important;
+}
+
+.event-title-row .field {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.event-title-row label {
+  text-align: right !important;
+  margin-bottom: 6px !important;
+  font-weight: bold !important;
+}
+
+.event-title-row input,
+.event-title-row select {
+  width: 100% !important;
+  height: 42px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  box-sizing: border-box !important;
+}
+
+#eventTitleOutput {
+  max-width: 1120px !important;
+  margin: 10px auto 0 !important;
+  display: block !important;
+  min-height: 58px !important;
+  border-radius: 8px !important;
+}
+
+.created-title-label {
+  max-width: 1120px !important;
+  margin: 14px auto 6px !important;
+  display: block !important;
+  text-align: right !important;
+}
   </style>
 </head>
 
