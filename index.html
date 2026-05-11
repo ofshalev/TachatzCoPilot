@@ -306,6 +306,33 @@ body {
     grid-template-columns: 1fr;
   }
 }
+    .next-tab-btn {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+
+  padding: 10px 24px;
+  border: none;
+  border-radius: 999px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+  z-index: 9999;
+}
+
+.next-tab-btn:hover {
+  background: #1d4ed8;
+}
+
+.next-tab-btn:active {
+  transform: translateY(2px);
+}
   </style>
 </head>
 
@@ -543,7 +570,15 @@ function closeAllEdits() {
     }
   });
 }
+function goToNextTab() {
+  const tabs = Array.from(document.querySelectorAll(".tab-button"));
+  const activeIndex = tabs.findIndex(btn => btn.classList.contains("active"));
 
+  if (activeIndex === -1 || tabs.length === 0) return;
+
+  const nextIndex = (activeIndex + 1) % tabs.length;
+  tabs[nextIndex].click();
+}
 
     
     document.getElementById('reportInput').addEventListener('keydown', function(event) {
@@ -557,6 +592,6 @@ function closeAllEdits() {
 
 
 </script>
-
+<button id="nextTabBtn" class="next-tab-btn" onclick="goToNextTab()">הבא</button>
 </body>
 </html>
