@@ -306,10 +306,9 @@ body {
     grid-template-columns: 1fr;
   }
 }
-    .next-tab-btn {
-  
-  left: 20px;
-  bottom: 20px;
+.next-tab-btn {
+  align-self: flex-start;
+  margin-top: 18px;
 
   padding: 10px 24px;
   border: none;
@@ -323,7 +322,6 @@ body {
   cursor: pointer;
 
   box-shadow: 0 4px 10px rgba(0,0,0,0.18);
-  z-index: 9999;
 }
 
 .next-tab-btn:hover {
@@ -332,6 +330,19 @@ body {
 
 .next-tab-btn:active {
   transform: translateY(2px);
+}
+
+.next-tab-btn:hover {
+  background: #1d4ed8;
+}
+
+.next-tab-btn:active {
+  transform: translateY(2px);
+}
+    .tab-next-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
 }
   </style>
 </head>
@@ -353,6 +364,9 @@ body {
 
 <div id="events" class="tab-content active">
   <iframe src="events.html" class="tool-frame"></iframe>
+  <div class="tab-next-row">
+  <button id="nextTabBtn" class="next-tab-btn" onclick="goToNextTab()">הבא</button>
+</div>
 </div>
 
 <div id="signs" class="tab-content">
