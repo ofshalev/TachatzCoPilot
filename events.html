@@ -136,48 +136,72 @@
   font-size: 15px;
   font-family: Arial, sans-serif;
 }
+    .event-title-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 12px;
+  align-items: end;
+  direction: rtl;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  text-align: right;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+}
   </style>
 </head>
 
 <body>
 
-  <div class="event-title-box">
-    <h3>כותרת אירוע</h3>
+  <div class="event-title-grid">
 
-    <div class="event-title-grid">
+  <div class="field">
+    <label for="citySelect">עיר</label>
+    <select id="citySelect" onchange="updateStreetList(); generateEventTitle(); generateEventDescription();">
+      <option value="">בחר עיר</option>
+    </select>
+  </div>
 
-     <label for="citySelect">עיר</label>
-<select id="citySelect" onchange="updateStreetList(); generateEventTitle(); generateEventDescription();">
-  <option value="">בחר עיר</option>
-</select>
+  <div class="field">
+    <label for="reason">סיבה</label>
+    <select id="reason" onchange="generateEventTitle(); generateEventDescription();">
+      <option value="עבודות">עבודות</option>
+      <option value="תאונה">תאונה</option>
+      <option value="חסימה">חסימה</option>
+    </select>
+  </div>
 
- <div class="field">
-        <label>סיבה</label>
-        <select id="eventReason" onchange="buildEventTitle()">
-          <option value="עבודות">עבודות</option>
-          <option value="תאונת דרכים">תאונת דרכים</option>
-          <option value="רכב תקוע">רכב תקוע</option>
-        </select>
-      </div>
-      
-<label for="streetSelect">רחוב</label>
-<select id="streetSelect" onchange="generateEventTitle(); generateEventDescription();" disabled>
-  <option value="">בחר רחוב</option>
-</select>
+  <div class="field">
+    <label for="streetSelect">רחוב</label>
+    <select id="streetSelect" onchange="generateEventTitle(); generateEventDescription();">
+      <option value="">בחר רחוב</option>
+    </select>
+  </div>
 
-     
+  <div class="field">
+    <label for="startDate">התחלה</label>
+    <input id="startDate" type="date" onchange="generateEventTitle();">
+  </div>
 
-      <div class="field">
-        <label>התחלה</label>
-        <input type="date" id="eventStartDay" onchange="buildEventTitle()">
-      </div>
+  <div class="field">
+    <label for="endDate">סיום</label>
+    <input id="endDate" type="date" onchange="generateEventTitle();">
+  </div>
 
-      <div class="field">
-        <label>סיום</label>
-        <input type="date" id="eventEndDay" onchange="buildEventTitle()">
-      </div>
-
-    </div>
+</div>
 
     <label class="result-label">כותרת שנוצרה</label>
     <textarea id="eventTitleResult" readonly></textarea>
