@@ -146,64 +146,12 @@
 
     <div class="event-title-grid">
 
-      <div class="field">
-       <label for="city">עיר</label>
-<select id="eventCity" onchange="generateEventTitle(); generateEventDescription();">
+     <label for="citySelect">עיר</label>
+<select id="citySelect" onchange="updateStreetList(); generateEventTitle(); generateEventDescription();">
   <option value="">בחר עיר</option>
-  <option value="אבן יהודה">אבן יהודה</option>
-  <option value="אור יהודה">אור יהודה</option>
-  <option value="אזור">אזור</option>
-  <option value="אלעד">אלעד</option>
-  <option value="אשדוד">אשדוד</option>
-  <option value="באר יעקב">באר יעקב</option>
-  <option value="בית דגן">בית דגן</option>
-  <option value="בני ברק">בני ברק</option>
-  <option value="בת ים">בת ים</option>
-  <option value="ג'לג'וליה">ג'לג'וליה</option>
-  <option value="גבעת שמואל">גבעת שמואל</option>
-  <option value="גבעתיים">גבעתיים</option>
-  <option value="גדרה">גדרה</option>
-  <option value="גן יבנה">גן יבנה</option>
-  <option value="גני תקווה">גני תקווה</option>
-  <option value="הוד השרון">הוד השרון</option>
-  <option value="הרצליה">הרצליה</option>
-  <option value="חולון">חולון</option>
-  <option value="טייבה">טייבה</option>
-  <option value="טירה">טירה</option>
-  <option value="יבנה">יבנה</option>
-  <option value="יהוד">יהוד</option>
-  <option value="כוכב יאיר">כוכב יאיר</option>
-  <option value="כפר חב&quot;ד">כפר חב"ד</option>
-  <option value="כפר יונה">כפר יונה</option>
-  <option value="כפר סבא">כפר סבא</option>
-  <option value="כפר סירקין">כפר סירקין</option>
-  <option value="כפר קאסם">כפר קאסם</option>
-  <option value="לוד">לוד</option>
-  <option value="מזכרת בתיה">מזכרת בתיה</option>
-  <option value="נחלים">נחלים</option>
-  <option value="נס ציונה">נס ציונה</option>
-  <option value="נתניה">נתניה</option>
-  <option value="פרדסיה">פרדסיה</option>
-  <option value="פתח תקווה">פתח תקווה</option>
-  <option value="קדימה צורן">קדימה צורן</option>
-  <option value="קלנסווה">קלנסווה</option>
-  <option value="קרית אונו">קרית אונו</option>
-  <option value="קרית עקרון">קרית עקרון</option>
-  <option value="ראש העין">ראש העין</option>
-  <option value="ראשון לציון">ראשון לציון</option>
-  <option value="רחובות">רחובות</option>
-  <option value="רמלה">רמלה</option>
-  <option value="רמת גן">רמת גן</option>
-  <option value="רמת השרון">רמת השרון</option>
-  <option value="רעננה">רעננה</option>
-  <option value="שוהם">שוהם</option>
-  <option value="תל אביב">תל אביב</option>
-  <option value="תל מונד">תל מונד</option>
-  <option value="תנובות">תנובות</option>
 </select>
-      </div>
 
-      <div class="field">
+ <div class="field">
         <label>סיבה</label>
         <select id="eventReason" onchange="buildEventTitle()">
           <option value="עבודות">עבודות</option>
@@ -211,19 +159,21 @@
           <option value="רכב תקוע">רכב תקוע</option>
         </select>
       </div>
+      
+<label for="streetSelect">רחוב</label>
+<select id="streetSelect" onchange="generateEventTitle(); generateEventDescription();" disabled>
+  <option value="">בחר רחוב</option>
+</select>
+
+     
 
       <div class="field">
-        <label>רחוב / כביש / דרך</label>
-        <input type="text" id="eventStreet" placeholder="לדוגמה: ז'בוטינסקי" oninput="buildEventTitle()">
-      </div>
-
-      <div class="field">
-        <label>יום</label>
+        <label>התחלה</label>
         <input type="date" id="eventStartDay" onchange="buildEventTitle()">
       </div>
 
       <div class="field">
-        <label>יום סיום</label>
+        <label>סיום</label>
         <input type="date" id="eventEndDay" onchange="buildEventTitle()">
       </div>
 
@@ -272,6 +222,8 @@
 <button type="button" class="copy-btn" onclick="copyEventDescription()">העתק תיאור</button>
   </div>
 
+<script src="streets-db.js"></script>
+  
   <script>
     
 
@@ -292,6 +244,40 @@
   if (endDayInput) {
     endDayInput.value = "";
   }
+}
+
+function fillCityList() {
+  const citySelect = document.getElementById("citySelect");
+
+  citySelect.innerHTML = '<option value="">בחר עיר</option>';
+
+  window.CITIES.forEach(city => {
+    const option = document.createElement("option");
+    option.value = city;
+    option.textContent = city;
+    citySelect.appendChild(option);
+  });
+}
+
+function updateStreetList() {
+  const city = document.getElementById("citySelect").value;
+  const streetSelect = document.getElementById("streetSelect");
+
+  streetSelect.innerHTML = '<option value="">בחר רחוב</option>';
+
+  if (!city || !window.STREETS_BY_CITY[city]) {
+    streetSelect.disabled = true;
+    return;
+  }
+
+  window.STREETS_BY_CITY[city].forEach(street => {
+    const option = document.createElement("option");
+    option.value = street;
+    option.textContent = street;
+    streetSelect.appendChild(option);
+  });
+
+  streetSelect.disabled = false;
 }
     
 function formatSingleDate(dateValue) {
@@ -338,9 +324,9 @@ function formatDateRange(startValue, endValue) {
 }
 
 function buildEventTitle() {
-  const city = document.getElementById("eventCity").value.trim();
+  const city = document.getElementById("citySelect").value;
+  const street = document.getElementById("streetSelect").value;
   const reason = document.getElementById("eventReason").value;
-  const street = document.getElementById("eventStreet").value.trim();
   const startDay = document.getElementById("eventStartDay").value;
   const endDay = document.getElementById("eventEndDay").value;
 
@@ -453,6 +439,8 @@ window.onload = function () {
   buildEventTitle();
   buildEventDescription();
 };
+
+    fillCityList();
   </script>
 
 </body>
