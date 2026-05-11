@@ -161,12 +161,59 @@
   height: 42px;
   box-sizing: border-box;
 }
+    .section-title {
+  text-align: right;
+  margin-bottom: 18px;
+}
+
+.event-title-row {
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 12px !important;
+  align-items: end !important;
+  direction: rtl !important;
+}
+
+.event-title-row .field {
+  display: flex !important;
+  flex-direction: column !important;
+  min-width: 0 !important;
+}
+
+.event-title-row label {
+  text-align: right !important;
+  margin-bottom: 6px !important;
+  font-weight: bold !important;
+}
+
+.event-title-row input,
+.event-title-row select {
+  width: 100% !important;
+  height: 42px !important;
+  box-sizing: border-box !important;
+}
+
+.created-title-label {
+  display: block;
+  text-align: right;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+#eventTitleOutput {
+  width: 100%;
+  min-height: 58px;
+  box-sizing: border-box;
+}
   </style>
 </head>
 
 <body>
+<h3 class="section-title">כותרת אירוע</h3>
 
-  <div class="event-title-grid">
+<div class="event-title-row">
 
   <div class="field">
     <label for="citySelect">עיר</label>
@@ -181,31 +228,31 @@
       <option value="עבודות">עבודות</option>
       <option value="תאונה">תאונה</option>
       <option value="חסימה">חסימה</option>
+      <option value="רכב תקוע">רכב תקוע</option>
     </select>
   </div>
 
   <div class="field">
     <label for="streetSelect">רחוב</label>
-    <select id="streetSelect" onchange="generateEventTitle(); generateEventDescription();">
+    <select id="streetSelect" onchange="generateEventTitle(); generateEventDescription();" disabled>
       <option value="">בחר רחוב</option>
     </select>
   </div>
 
   <div class="field">
     <label for="startDate">התחלה</label>
-    <input id="startDate" type="date" onchange="generateEventTitle();">
+    <input id="startDate" type="date" onchange="generateEventTitle(); generateEventDescription();">
   </div>
 
   <div class="field">
     <label for="endDate">סיום</label>
-    <input id="endDate" type="date" onchange="generateEventTitle();">
+    <input id="endDate" type="date" onchange="generateEventTitle(); generateEventDescription();">
   </div>
 
 </div>
 
-    <label class="result-label">כותרת שנוצרה</label>
-    <textarea id="eventTitleResult" readonly></textarea>
-
+<label class="created-title-label" for="eventTitleOutput">כותרת שנוצרה</label>
+<textarea id="eventTitleOutput" readonly></textarea>
     <button type="button" class="copy-btn" onclick="copyEventTitle()">העתק כותרת</button>
     <button type="button" class="clear-btn" onclick="clearEventTitleFields()">נקה הכל</button>
     <hr class="section-divider">
