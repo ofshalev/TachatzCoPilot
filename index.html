@@ -307,9 +307,6 @@ body {
   }
 }
 .next-tab-btn {
-  align-self: flex-start;
-  margin-top: 18px;
-
   padding: 10px 24px;
   border: none;
   border-radius: 999px;
@@ -322,6 +319,20 @@ body {
   cursor: pointer;
 
   box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+.next-tab-btn:hover {
+  background: #1d4ed8;
+}
+.tab-next-row {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-bottom: 30px;
+}
+.next-tab-btn:active {
+  transform: translateY(2px);
 }
 
 .next-tab-btn:hover {
@@ -585,7 +596,7 @@ function closeAllEdits() {
   });
 }
 function goToNextTab() {
-  const tabs = Array.from(document.querySelectorAll(".tab-button"));
+  const tabs = Array.from(document.querySelectorAll(".tab"));
   const activeIndex = tabs.findIndex(btn => btn.classList.contains("active"));
 
   if (activeIndex === -1 || tabs.length === 0) return;
@@ -606,6 +617,6 @@ function goToNextTab() {
 
 
 </script>
-<button id="nextTabBtn" class="next-tab-btn" onclick="goToNextTab()">הבא</button>
+
 </body>
 </html>
