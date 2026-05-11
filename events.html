@@ -148,7 +148,61 @@
 
       <div class="field">
         <label>עיר</label>
-        <input type="text" id="eventCity" placeholder="לדוגמה: פתח תקווה" oninput="buildEventTitle()">
+       
+<input id="eventCity" list="citiesList" placeholder="לדוגמה: פתח תקווה" oninput="generateEventTitle(); generateEventDescription();">
+
+<datalist id="citiesList">
+  <option value="אבן יהודה">
+  <option value="אור יהודה">
+  <option value="אזור">
+  <option value="אלעד">
+  <option value="אשדוד">
+  <option value="באר יעקב">
+  <option value="בית דגן">
+  <option value="בני ברק">
+  <option value="בת ים">
+  <option value="ג'לג'וליה">
+  <option value="גבעת שמואל">
+  <option value="גבעתיים">
+  <option value="גדרה">
+  <option value="גן יבנה">
+  <option value="גני תקווה">
+  <option value="הוד השרון">
+  <option value="הרצליה">
+  <option value="חולון">
+  <option value="טייבה">
+  <option value="טירה">
+  <option value="יבנה">
+  <option value="יהוד">
+  <option value="כוכב יאיר">
+  <option value="כפר חב&quot;ד">
+  <option value="כפר יונה">
+  <option value="כפר סבא">
+  <option value="כפר סירקין">
+  <option value="כפר קאסם">
+  <option value="לוד">
+  <option value="מזכרת בתיה">
+  <option value="נחלים">
+  <option value="נס ציונה">
+  <option value="נתניה">
+  <option value="פרדסיה">
+  <option value="פתח תקווה">
+  <option value="קדימה צורן">
+  <option value="קלנסווה">
+  <option value="קרית אונו">
+  <option value="קרית עקרון">
+  <option value="ראש העין">
+  <option value="ראשון לציון">
+  <option value="רחובות">
+  <option value="רמלה">
+  <option value="רמת גן">
+  <option value="רמת השרון">
+  <option value="רעננה">
+  <option value="שוהם">
+  <option value="תל אביב">
+  <option value="תל מונד">
+  <option value="תנובות">
+</datalist>
       </div>
 
       <div class="field">
