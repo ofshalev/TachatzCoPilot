@@ -262,14 +262,7 @@
 
 <div class="event-title-row">
 
-  <div class="field">
-    <label for="citySelect">עיר</label>
-    <select id="citySelect" onchange="updateStreetList(); generateEventTitle(); generateEventDescription();">
-      <option value="">בחר עיר</option>
-    </select>
-  </div>
-
-  <div class="field">
+ <div class="field">
     <label for="reason">סיבה</label>
     <select id="reason" onchange="generateEventTitle(); generateEventDescription();">
       <option value="עבודות">עבודות</option>
@@ -278,6 +271,15 @@
       <option value="רכב תקוע">רכב תקוע</option>
     </select>
   </div>
+  
+  <div class="field">
+    <label for="citySelect">עיר</label>
+    <select id="citySelect" onchange="updateStreetList(); generateEventTitle(); generateEventDescription();">
+      <option value="">בחר עיר</option>
+    </select>
+  </div>
+
+ 
 
   <div class="field">
     <label for="streetSelect">רחוב</label>
