@@ -264,7 +264,7 @@
 
  <div class="field">
     <label for="reason">סיבה</label>
-    <select id="reason" onchange="generateEventTitle(); generateEventDescription();">
+    <select id="reason" onchange="buildEventTitle(); buildEventDescription();">
       <option value="עבודות">עבודות</option>
       <option value="תאונה">תאונה</option>
       <option value="חסימה">חסימה</option>
@@ -274,7 +274,7 @@
   
   <div class="field">
     <label for="citySelect">עיר</label>
-    <select id="citySelect" onchange="updateStreetList(); generateEventTitle(); generateEventDescription();">
+    <select id="citySelect" onchange="updateStreetList();">
       <option value="">בחר עיר</option>
     </select>
   </div>
@@ -283,19 +283,19 @@
 
   <div class="field">
     <label for="streetSelect">רחוב</label>
-    <select id="streetSelect" onchange="generateEventTitle(); generateEventDescription();" disabled>
+    <select id="streetSelect" onchange="buildEventTitle(); buildEventDescription();" disabled>
       <option value="">בחר רחוב</option>
     </select>
   </div>
 
   <div class="field">
     <label for="startDate">התחלה</label>
-    <input id="startDate" type="date" onchange="generateEventTitle(); generateEventDescription();">
+    <input id="startDate" type="date" onchange="buildEventTitle(); buildEventDescription();">
   </div>
 
   <div class="field">
     <label for="endDate">סיום</label>
-    <input id="endDate" type="date" onchange="generateEventTitle(); generateEventDescription();">
+    <input id="endDate" type="date" onchange="buildEventTitle(); buildEventDescription();">
   </div>
 
 </div>
@@ -347,27 +347,31 @@
   <script>
     
 
-  function setTodayAsDefaultEventDay() {
-  const startDayInput = document.getElementById("eventStartDay");
-  const endDayInput = document.getElementById("eventEndDay");
-
-  if (!startDayInput) return;
-
+ <script>
+function getTodayValue() {
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth() + 1).padStart(2, "0");
   const dd = String(today.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
 
-  startDayInput.value = `${yyyy}-${mm}-${dd}`;
+function setTodayAsDefaultEventDay() {
+  const startDate = document.getElementById("startDate");
+  const endDate = document.getElementById("endDate");
 
-  // End day stays empty by default
-  if (endDayInput) {
-    endDayInput.value = "";
+  if (startDate) {
+    startDate.value = getTodayValue();
+  }
+
+  if (endDate) {
+    endDate.value = "";
   }
 }
 
 function fillCityList() {
   const citySelect = document.getElementById("citySelect");
+  if (!citySelect || !window.CITIES) return;
 
   citySelect.innerHTML = '<option value="">בחר עיר</option>';
 
@@ -385,8 +389,10 @@ function updateStreetList() {
 
   streetSelect.innerHTML = '<option value="">בחר רחוב</option>';
 
-  if (!city || !window.STREETS_BY_CITY[city]) {
+  if (!city || !window.STREETS_BY_CITY || !window.STREETS_BY_CITY[city]) {
     streetSelect.disabled = true;
+    buildEventTitle();
+    buildEventDescription();
     return;
   }
 
@@ -398,8 +404,11 @@ function updateStreetList() {
   });
 
   streetSelect.disabled = false;
+
+  buildEventTitle();
+  buildEventDescription();
 }
-    
+
 function formatSingleDate(dateValue) {
   if (!dateValue) return "";
 
@@ -429,28 +438,28 @@ function formatDateRange(startValue, endValue) {
   const endMonth = endParts[1];
   const endDay = endParts[2];
 
-  // Same month and same year: 10-11.05.2026
   if (startYear === endYear && startMonth === endMonth) {
     return `${startDay}-${endDay}.${endMonth}.${endYear}`;
   }
 
-  // Same year, different month: 30.05-02.06.2026
   if (startYear === endYear) {
     return `${startDay}.${startMonth}-${endDay}.${endMonth}.${endYear}`;
   }
 
-  // Different years: 31.12.2026-01.01.2027
   return `${startDay}.${startMonth}.${startYear}-${endDay}.${endMonth}.${endYear}`;
 }
 
 function buildEventTitle() {
-  const city = document.getElementById("citySelect").value;
-  const street = document.getElementById("streetSelect").value;
-  const reason = document.getElementById("eventReason").value;
-  const startDay = document.getElementById("eventStartDay").value;
-  const endDay = document.getElementById("eventEndDay").value;
+  const city = document.getElementById("citySelect")?.value || "";
+  const street = document.getElementById("streetSelect")?.value || "";
+  const reason = document.getElementById("reason")?.value || "";
+  const startDate = document.getElementById("startDate")?.value || "";
+  const endDate = document.getElementById("endDate")?.value || "";
+  const resultBox = document.getElementById("eventTitleOutput");
 
-  const datePart = formatDateRange(startDay, endDay);
+  if (!resultBox) return;
+
+  const datePart = formatDateRange(startDate, endDate);
 
   const parts = [];
 
@@ -459,27 +468,30 @@ function buildEventTitle() {
   if (street) parts.push(street);
   if (datePart) parts.push(datePart);
 
-  document.getElementById("eventTitleResult").value = parts.join(", ");
+  resultBox.value = parts.join(", ");
+
   buildEventDescription();
 }
-    function copyEventTitle() {
-  const textBox = document.getElementById("eventTitleResult");
+
+function copyEventTitle() {
+  const textBox = document.getElementById("eventTitleOutput");
   if (!textBox) return;
 
   navigator.clipboard.writeText(textBox.value);
 }
 
 function clearEventTitleFields() {
-  document.getElementById("eventCity").value = "";
-  document.getElementById("eventStreet").value = "";
+  document.getElementById("reason").selectedIndex = 0;
+  document.getElementById("citySelect").value = "";
 
-  document.getElementById("eventReason").selectedIndex = 0;
+  const streetSelect = document.getElementById("streetSelect");
+  streetSelect.innerHTML = '<option value="">בחר רחוב</option>';
+  streetSelect.disabled = true;
 
   setTodayAsDefaultEventDay();
 
-  document.getElementById("eventEndDay").value = "";
-
   buildEventTitle();
+  buildEventDescription();
 }
 
 function getSelectedVerifications() {
@@ -510,9 +522,9 @@ function formatVerificationText(items) {
 
 function buildEventDescription() {
   const operator = document.getElementById("eventOperator")?.value || "";
-  const reason = document.getElementById("eventReason")?.value || "";
-  const street = document.getElementById("eventStreet")?.value.trim() || "";
-  const city = document.getElementById("eventCity")?.value.trim() || "";
+  const reason = document.getElementById("reason")?.value || "";
+  const street = document.getElementById("streetSelect")?.value || "";
+  const city = document.getElementById("citySelect")?.value || "";
   const resultBox = document.getElementById("eventDescriptionResult");
 
   if (!resultBox) return;
@@ -553,14 +565,14 @@ function copyEventDescription() {
 
   navigator.clipboard.writeText(textBox.value);
 }
-    
+
 window.onload = function () {
+  fillCityList();
   setTodayAsDefaultEventDay();
   buildEventTitle();
   buildEventDescription();
 };
-
-    fillCityList();
+</script>
   </script>
 
 </body>
