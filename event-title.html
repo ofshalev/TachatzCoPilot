@@ -176,7 +176,7 @@
   <input id="startTime" type="time" onchange="updateEndTimeByReason(); buildEventTitle(); this.blur();">
 </div>
 
-<div class="field">
+<div class="field" id="endDateField">
   <label for="endDate">סיום</label>
   <input id="endDate" type="date" onchange="buildEventTitle();">
 
@@ -319,7 +319,12 @@
       const street = document.getElementById("streetSelect").value;
       const reason = document.getElementById("reasonSelect").value;
       const startDate = document.getElementById("startDate").value;
-      const endDate = document.getElementById("endDate").value;
+      const eventType = localStorage.getItem("tachatzEventType") || "realtime";
+let endDate = document.getElementById("endDate").value;
+
+if (eventType === "realtime") {
+  endDate = "";
+}
       const output = document.getElementById("eventTitleOutput");
       const startTime = document.getElementById("startTime").value;
 const endTime = document.getElementById("endTime").value;
@@ -428,11 +433,25 @@ function setDefaultHoursByReason() {
 
   endTimeInput.value = `${endHours}:${endMinutes}`;
 }
+
+function applyEventTypeLayout() {
+  const eventType = localStorage.getItem("tachatzEventType") || "realtime";
+  const endDateField = document.getElementById("endDateField");
+  const endDateInput = document.getElementById("endDate");
+
+  if (eventType === "realtime") {
+    endDateField.style.display = "none";
+    endDateInput.value = "";
+  } else {
+    endDateField.style.display = "flex";
+  }
+}
     
-    window.onload = function () {
+  window.onload = function () {
   showChosenEventType();
   fillCityList();
   setTodayAsDefault();
+  applyEventTypeLayout();
   buildEventTitle();
 };
   </script>
