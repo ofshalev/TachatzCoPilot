@@ -606,7 +606,22 @@ function goToNextTab() {
   const nextIndex = (activeIndex + 1) % tabs.length;
   tabs[nextIndex].click();
 }
+function goToMainTab(tabId) {
+  document.querySelectorAll(".tab-content").forEach(tab => {
+    tab.classList.remove("active");
+  });
 
+  document.querySelectorAll(".tab").forEach(button => {
+    button.classList.remove("active");
+  });
+
+  document.getElementById(tabId).classList.add("active");
+
+  const tabButton = document.querySelector(`.tab[onclick="openTab('${tabId}')"]`);
+  if (tabButton) {
+    tabButton.classList.add("active");
+  }
+}
     
     document.getElementById('reportInput').addEventListener('keydown', function(event) {
       if (event.ctrlKey && event.key === 'Enter') {
