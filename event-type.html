@@ -83,18 +83,17 @@
   </div>
 
   <script>
-    function selectEventType(type) {
-  localStorage.setItem("tachatzEventType", type);
-
+  function selectEventType(type) {
   if (type === "realtime") {
+    localStorage.setItem("tachatzEventType", "realtime");
     localStorage.setItem("tachatzEventTypeText", "זמן אמת");
   }
 
   if (type === "future") {
+    localStorage.setItem("tachatzEventType", "future");
     localStorage.setItem("tachatzEventTypeText", "עתידי");
   }
 
-  // Move to next page/tab
   parent.goToMainTab("event-title");
 }
   </script>
