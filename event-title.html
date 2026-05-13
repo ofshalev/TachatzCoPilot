@@ -145,7 +145,7 @@
 
       <div class="field">
         <label for="reasonSelect">סיבה</label>
-        <select id="reasonSelect" onchange="setDefaultHoursByReason(); buildEventTitle();">
+        <select id="reasonSelect" onchange="updateEndTimeByReason(); buildEventTitle();">
           <option value="תאונה">תאונה</option>
           <option value="עבודות">עבודות</option>
           <option value="חסימה">חסימה</option>
@@ -173,7 +173,7 @@
   <input id="startDate" type="date" onchange="buildEventTitle();">
 
   <label class="sub-label" for="startTime">שעה</label>
-  <input id="startTime" type="time" onchange="buildEventTitle();">
+  <input id="startTime" type="time" onchange="updateEndTimeByReason(); buildEventTitle(); this.blur();">
 </div>
 
 <div class="field">
@@ -181,7 +181,7 @@
   <input id="endDate" type="date" onchange="buildEventTitle();">
 
   <label class="sub-label" for="endTime">שעה</label>
-  <input id="endTime" type="time" onchange="buildEventTitle();">
+  <input id="endTime" type="time" onchange="buildEventTitle(); this.blur();">
 </div>
 
 <div class="field">
@@ -333,9 +333,7 @@ const dateText = formatDateRange(startDate, endDate, dateMode);
       if (reason) parts.push(reason);
       if (street) parts.push(street);
       if (dateText) parts.push(dateText);
-      if (startTime && endTime) {
-  parts.push(`${startTime}-${endTime}`);
-}
+
 
       const title = parts.join(", ");
 
@@ -403,6 +401,32 @@ function setDefaultHoursByReason() {
 
   startTime.value = getTimeValue(now);
   endTime.value = getTimeValue(end);
+}
+
+    function updateEndTimeByReason() {
+  const reason = document.getElementById("reasonSelect").value;
+  const startTimeValue = document.getElementById("startTime").value;
+  const endTimeInput = document.getElementById("endTime");
+
+  if (!startTimeValue) return;
+
+  const [hours, minutes] = startTimeValue.split(":").map(Number);
+
+  const tempDate = new Date();
+  tempDate.setHours(hours);
+  tempDate.setMinutes(minutes);
+  tempDate.setSeconds(0);
+
+  if (reason === "עבודות") {
+    tempDate.setHours(tempDate.getHours() + 2);
+  } else {
+    tempDate.setHours(tempDate.getHours() + 1);
+  }
+
+  const endHours = String(tempDate.getHours()).padStart(2, "0");
+  const endMinutes = String(tempDate.getMinutes()).padStart(2, "0");
+
+  endTimeInput.value = `${endHours}:${endMinutes}`;
 }
     
     window.onload = function () {
