@@ -611,19 +611,15 @@ function goToNextTab() {
   tabs[nextIndex].click();
 }
 function goToMainTab(tabId) {
-  document.querySelectorAll(".tab-content").forEach(tab => {
-    tab.classList.remove("active");
-  });
+  const targetButton = document.querySelector(`.tab[onclick*="'${tabId}'"]`);
 
-  document.querySelectorAll(".tab").forEach(button => {
-    button.classList.remove("active");
-  });
+  openTab(tabId, targetButton);
 
-  document.getElementById(tabId).classList.add("active");
-
-  const tabButton = document.querySelector(`.tab[onclick="openTab('${tabId}')"]`);
-  if (tabButton) {
-    tabButton.classList.add("active");
+  if (tabId === "event-title") {
+    const frame = document.querySelector("#event-title iframe");
+    if (frame && frame.contentWindow.showChosenEventType) {
+      frame.contentWindow.showChosenEventType();
+    }
   }
 }
     
