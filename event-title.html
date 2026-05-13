@@ -129,6 +129,10 @@
   margin-bottom: 18px;
   color: #2f5bea;
 }
+    .sub-label {
+  margin-top: 10px;
+  font-size: 14px;
+}
   </style>
 </head>
 
@@ -141,7 +145,7 @@
 
       <div class="field">
         <label for="reasonSelect">סיבה</label>
-        <select id="reasonSelect" onchange="buildEventTitle();">
+        <select id="reasonSelect" onchange="setDefaultHoursByReason(); buildEventTitle();">
           <option value="תאונה">תאונה</option>
           <option value="עבודות">עבודות</option>
           <option value="חסימה">חסימה</option>
@@ -165,14 +169,20 @@
       </div>
 
       <div class="field">
-        <label for="startDate">התחלה</label>
-        <input id="startDate" type="date" onchange="buildEventTitle();">
-      </div>
+  <label for="startDate">התחלה</label>
+  <input id="startDate" type="date" onchange="buildEventTitle();">
 
-      <div class="field">
-        <label for="endDate">סיום</label>
-        <input id="endDate" type="date" onchange="buildEventTitle();">
-      </div>
+  <label class="sub-label" for="startTime">שעה</label>
+  <input id="startTime" type="time" onchange="buildEventTitle();">
+</div>
+
+<div class="field">
+  <label for="endDate">סיום</label>
+  <input id="endDate" type="date" onchange="buildEventTitle();">
+
+  <label class="sub-label" for="endTime">שעה</label>
+  <input id="endTime" type="time" onchange="buildEventTitle();">
+</div>
 
 <div class="field">
   <label for="dateMode">סוג תאריכים</label>
@@ -211,9 +221,11 @@
     }
 
     function setTodayAsDefault() {
-      document.getElementById("startDate").value = getTodayValue();
-      document.getElementById("endDate").value = "";
-    }
+  document.getElementById("startDate").value = getTodayValue();
+  document.getElementById("endDate").value = getTodayValue();
+
+  setDefaultHoursByReason();
+}
 
     function fillCityList() {
       const citySelect = document.getElementById("citySelect");
@@ -309,6 +321,8 @@
       const startDate = document.getElementById("startDate").value;
       const endDate = document.getElementById("endDate").value;
       const output = document.getElementById("eventTitleOutput");
+      const startTime = document.getElementById("startTime").value;
+const endTime = document.getElementById("endTime").value;
 
       const dateMode = document.getElementById("dateMode").value;
 const dateText = formatDateRange(startDate, endDate, dateMode);
@@ -319,6 +333,9 @@ const dateText = formatDateRange(startDate, endDate, dateMode);
       if (reason) parts.push(reason);
       if (street) parts.push(street);
       if (dateText) parts.push(dateText);
+      if (startTime && endTime) {
+  parts.push(`${startTime}-${endTime}`);
+}
 
       const title = parts.join(", ");
 
@@ -362,6 +379,30 @@ function showChosenEventType() {
   if (!box) return;
 
   box.textContent = chosenText ? "סוג אירוע: " + chosenText : "";
+}
+
+function getTimeValue(dateObj) {
+  const hh = String(dateObj.getHours()).padStart(2, "0");
+  const mm = String(dateObj.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function setDefaultHoursByReason() {
+  const reason = document.getElementById("reasonSelect").value;
+  const startTime = document.getElementById("startTime");
+  const endTime = document.getElementById("endTime");
+
+  const now = new Date();
+  const end = new Date(now);
+
+  if (reason === "עבודות") {
+    end.setHours(end.getHours() + 2);
+  } else {
+    end.setHours(end.getHours() + 1);
+  }
+
+  startTime.value = getTimeValue(now);
+  endTime.value = getTimeValue(end);
 }
     
     window.onload = function () {
