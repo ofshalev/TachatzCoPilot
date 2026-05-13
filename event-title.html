@@ -1,1 +1,131 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>סוג אירוע</title>
 
+  <style>
+    body {
+      margin: 0;
+      padding: 22px;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      direction: rtl;
+    }
+
+    .box {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 18px;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 14px;
+      text-align: right;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+      direction: rtl;
+    }
+
+    textarea {
+      margin-top: 12px;
+      height: 55px;
+      resize: none;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .copy-btn {
+      background: #2f5bea;
+    }
+
+    .clear-btn {
+      background: #777;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h3>סוג אירוע</h3>
+
+    <label for="eventType">בחר סוג אירוע</label>
+    <select id="eventType" onchange="buildEventType()">
+      <option value="תאונת דרכים">תאונת דרכים</option>
+      <option value="עבודות">עבודות</option>
+      <option value="חסימה">חסימה</option>
+      <option value="רכב תקוע">רכב תקוע</option>
+      <option value="אירוע משטרתי">אירוע משטרתי</option>
+      <option value="אחר">אחר</option>
+    </select>
+
+    <label style="margin-top:14px;" for="eventTypeOutput">סוג אירוע שנבחר</label>
+    <textarea id="eventTypeOutput" readonly></textarea>
+
+    <div class="buttons">
+      <button type="button" class="copy-btn" onclick="copyEventType()">העתק</button>
+      <button type="button" class="clear-btn" onclick="clearEventType()">נקה</button>
+    </div>
+  </div>
+
+  <script>
+    function buildEventType() {
+      const eventType = document.getElementById("eventType").value;
+      document.getElementById("eventTypeOutput").value = eventType;
+    }
+
+    function copyEventType() {
+      const textBox = document.getElementById("eventTypeOutput");
+      navigator.clipboard.writeText(textBox.value);
+    }
+
+    function clearEventType() {
+      document.getElementById("eventType").selectedIndex = 0;
+      buildEventType();
+    }
+
+    window.onload = function () {
+      buildEventType();
+    };
+  </script>
+
+</body>
+</html>
