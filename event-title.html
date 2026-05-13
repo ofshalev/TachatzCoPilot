@@ -1,1 +1,359 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>כותרת אירוע</title>
 
+  <style>
+    body {
+      margin: 0;
+      padding: 22px;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      direction: rtl;
+    }
+
+    .box {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      text-align: right;
+      font-size: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      text-align: right;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+      direction: rtl;
+    }
+
+    select,
+    input {
+      height: 42px;
+    }
+
+    textarea {
+      margin-top: 8px;
+      min-height: 58px;
+      resize: none;
+    }
+
+    .result-label {
+      margin-top: 16px;
+      display: block;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .copy-btn {
+      background: #2f5bea;
+    }
+
+    .clear-btn {
+      background: #777;
+    }
+
+    .next-btn {
+      background: #2f5bea;
+      margin-right: auto;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .error {
+      margin-top: 10px;
+      color: #b00020;
+      font-size: 14px;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h3>כותרת אירוע</h3>
+
+    <div class="grid">
+
+      <div class="field">
+        <label for="reasonSelect">סיבה</label>
+        <select id="reasonSelect" onchange="buildEventTitle();">
+          <option value="תאונה">תאונה</option>
+          <option value="עבודות">עבודות</option>
+          <option value="חסימה">חסימה</option>
+          <option value="רכב תקוע">רכב תקוע</option>
+          <option value="אירוע משטרתי">אירוע משטרתי</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="citySelect">עיר</label>
+        <select id="citySelect" onchange="updateStreetList(); buildEventTitle();">
+          <option value="">בחר עיר</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="streetSelect">רחוב</label>
+        <select id="streetSelect" onchange="buildEventTitle();" disabled>
+          <option value="">בחר רחוב</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="startDate">התחלה</label>
+        <input id="startDate" type="date" onchange="buildEventTitle();">
+      </div>
+
+      <div class="field">
+        <label for="endDate">סיום</label>
+        <input id="endDate" type="date" onchange="buildEventTitle();">
+      </div>
+
+<div class="field">
+  <label for="dateMode">סוג תאריכים</label>
+  <select id="dateMode" onchange="buildEventTitle();">
+    <option value="range">רציף</option>
+    <option value="separate">נפרד</option>
+  </select>
+</div>
+
+
+    </div>
+
+    <div id="dbError" class="error">
+      שגיאה: קובץ streets-db.js לא נטען או שאין בו רשימת ערים.
+    </div>
+
+    <label class="result-label" for="eventTitleOutput">כותרת שנוצרה</label>
+    <textarea id="eventTitleOutput" readonly></textarea>
+
+    <div class="buttons">
+      <button type="button" class="copy-btn" onclick="copyEventTitle()">העתק כותרת</button>
+      <button type="button" class="clear-btn" onclick="clearFields()">נקה הכל</button>
+      <button type="button" class="next-btn" onclick="goNext()">הבא</button>
+    </div>
+  </div>
+
+  <script src="streets-db.js"></script>
+
+  <script>
+    function getTodayValue() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function setTodayAsDefault() {
+      document.getElementById("startDate").value = getTodayValue();
+      document.getElementById("endDate").value = "";
+    }
+
+    function fillCityList() {
+      const citySelect = document.getElementById("citySelect");
+      const dbError = document.getElementById("dbError");
+
+      citySelect.innerHTML = '<option value="">בחר עיר</option>';
+
+      if (!window.CITIES || !Array.isArray(window.CITIES)) {
+        dbError.style.display = "block";
+        return;
+      }
+
+      dbError.style.display = "none";
+
+      window.CITIES.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+    }
+
+    function updateStreetList() {
+      const city = document.getElementById("citySelect").value;
+      const streetSelect = document.getElementById("streetSelect");
+
+      streetSelect.innerHTML = '<option value="">בחר רחוב</option>';
+
+      if (!city || !window.STREETS_BY_CITY || !window.STREETS_BY_CITY[city]) {
+        streetSelect.disabled = true;
+        return;
+      }
+
+      window.STREETS_BY_CITY[city].forEach(street => {
+        const option = document.createElement("option");
+        option.value = street;
+        option.textContent = street;
+        streetSelect.appendChild(option);
+      });
+
+      streetSelect.disabled = false;
+    }
+
+    function formatSingleDate(dateValue) {
+      if (!dateValue) return "";
+
+      const parts = dateValue.split("-");
+      const year = parts[0];
+      const month = parts[1];
+      const day = parts[2];
+
+      return `${day}.${month}.${year}`;
+    }
+
+    function formatDateRange(startValue, endValue, dateMode) {
+  if (!startValue) return "";
+
+  if (!endValue) {
+    return formatSingleDate(startValue);
+  }
+
+  const startParts = startValue.split("-");
+  const endParts = endValue.split("-");
+
+  const startYear = startParts[0];
+  const startMonth = startParts[1];
+  const startDay = startParts[2];
+
+  const endYear = endParts[0];
+  const endMonth = endParts[1];
+  const endDay = endParts[2];
+
+  const separator = dateMode === "separate" ? "+" : "-";
+
+  // Same month and same year: 11+13.05.2026 or 11-13.05.2026
+  if (startYear === endYear && startMonth === endMonth) {
+    return `${startDay}${separator}${endDay}.${endMonth}.${endYear}`;
+  }
+
+  // Same year, different month: 30.05+02.06.2026 or 30.05-02.06.2026
+  if (startYear === endYear) {
+    return `${startDay}.${startMonth}${separator}${endDay}.${endMonth}.${endYear}`;
+  }
+
+  // Different years
+  return `${startDay}.${startMonth}.${startYear}${separator}${endDay}.${endMonth}.${endYear}`;
+}
+
+    function buildEventTitle() {
+      const city = document.getElementById("citySelect").value;
+      const street = document.getElementById("streetSelect").value;
+      const reason = document.getElementById("reasonSelect").value;
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      const output = document.getElementById("eventTitleOutput");
+
+      const dateMode = document.getElementById("dateMode").value;
+const dateText = formatDateRange(startDate, endDate, dateMode);
+
+      const parts = [];
+
+      if (city) parts.push(city);
+      if (reason) parts.push(reason);
+      if (street) parts.push(street);
+      if (dateText) parts.push(dateText);
+
+      const title = parts.join(", ");
+
+      output.value = title;
+
+      localStorage.setItem("tachatzEventCity", city);
+      localStorage.setItem("tachatzEventStreet", street);
+      localStorage.setItem("tachatzEventReason", reason);
+      localStorage.setItem("tachatzEventStartDate", startDate);
+      localStorage.setItem("tachatzEventEndDate", endDate);
+      localStorage.setItem("tachatzEventTitle", title);
+    }
+
+    function copyEventTitle() {
+      const textBox = document.getElementById("eventTitleOutput");
+      navigator.clipboard.writeText(textBox.value);
+    }
+
+    function clearFields() {
+      document.getElementById("citySelect").value = "";
+
+      const streetSelect = document.getElementById("streetSelect");
+      streetSelect.innerHTML = '<option value="">בחר רחוב</option>';
+      streetSelect.disabled = true;
+
+      document.getElementById("reasonSelect").selectedIndex = 0;
+
+      setTodayAsDefault();
+      buildEventTitle();
+    }
+
+    function goNext() {
+      buildEventTitle();
+      window.location.href = "event-desc.html";
+    }
+
+    window.onload = function () {
+      fillCityList();
+      setTodayAsDefault();
+      buildEventTitle();
+    };
+  </script>
+
+</body>
+</html>
